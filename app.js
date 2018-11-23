@@ -47,6 +47,11 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
 
         module.value('config', {
             terrainExaggeration: 6,
+            imageryProvider: Cesium.createOpenStreetMapImageryProvider({
+                url: 'https://stamen-tiles.a.ssl.fastly.net/watercolor/',
+                fileExtension: 'jpg',
+                credit: 'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.'
+            }),
             default_layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM(),
@@ -71,8 +76,8 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=temperature_at_midnight__surface_level&format=image/png&STYLE=default'],
                     maxResolution: 8550,
                     visible: false,
-                    opacity: 0.95,
-                    path: 'Midnight temperatures',
+                    opacity: 1,
+                    path: 'Dawn temperatures',
                     exclusive: true
                 }),
                 new ol.layer.Tile({
@@ -90,8 +95,8 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=temperature_at_midnight__original__sea_level&format=image/png&STYLE=default'],
                     maxResolution: 8550,
                     visible: false,
-                    opacity: 0.95,
-                    path: 'Midnight temperatures',
+                    opacity: 1,
+                    path: 'Dawn temperatures',
                     exclusive: true
                 }),
                 new ol.layer.Tile({
@@ -109,8 +114,8 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=downscaled_temperature_at_midnight&format=image/png&STYLE=default'],
                     maxResolution: 8550,
                     visible: false,
-                    opacity: 0.95,
-                    path: 'Midnight temperatures',
+                    opacity: 1,
+                    path: 'Dawn temperatures',
                     exclusive: true
                 }),
                 new ol.layer.Tile({
@@ -127,9 +132,9 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     }),
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=downscaled_temperature_at_midnight__with_hydrography&format=image/png&STYLE=default'],
                     maxResolution: 8550,
-                    visible: false,
-                    opacity: 0.95,
-                    path: 'Midnight temperatures',
+                    visible: true,
+                    opacity: 1,
+                    path: 'Dawn temperatures',
                     exclusive: true
                 }),
 
@@ -148,7 +153,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=temperature_at_noon__surface_level&format=image/png&STYLE=default'],
                     maxResolution: 8550,
                     visible: false,
-                    opacity: 0.95,
+                    opacity: 1,
                     path: 'Noon temperatures',
                     exclusive: true
                 }),
@@ -167,7 +172,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=temperature_at_noon__original__sea_level&format=image/png&STYLE=default'],
                     maxResolution: 8550,
                     visible: false,
-                    opacity: 0.95,
+                    opacity: 1,
                     path: 'Noon temperatures',
                     exclusive: true
                 }),
@@ -186,7 +191,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=downscaled_temperature_at_noon&format=image/png&STYLE=default'],
                     maxResolution: 8550,
                     visible: false,
-                    opacity: 0.95,
+                    opacity: 1,
                     path: 'Noon temperatures',
                     exclusive: true
                 }),
@@ -205,7 +210,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     legends: ['http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map&version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=downscaled_temperature_at_noon__with_hydrography&format=image/png&STYLE=default'],
                     maxResolution: 8550,
                     visible: false,
-                    opacity: 0.95,
+                    opacity: 1,
                     path: 'Noon temperatures'
                 })
             ],
