@@ -46,6 +46,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
         };
 
         module.value('config', {
+            terrainExaggeration: 6,
             default_layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM(),
@@ -56,7 +57,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                 }),
 
                 new ol.layer.Tile({
-                    title: "Tempeature (at surface level) at midnight on 17th of February",
+                    title: "Temperatures on surface calculated directly from 4.5 x 4.5 km grid",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
@@ -71,10 +72,11 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     maxResolution: 8550,
                     visible: false,
                     opacity: 0.95,
-                    path: 'Midnight temperatures'
+                    path: 'Midnight temperatures',
+                    exclusive: true
                 }),
                 new ol.layer.Tile({
-                    title: "Tempeature (at sea level) at midnight on 17th of February",
+                    title: "Temperatures at a sea level calculated directly from 4.5 x 4.5 km grid",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
@@ -89,10 +91,11 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     maxResolution: 8550,
                     visible: false,
                     opacity: 0.95,
-                    path: 'Midnight temperatures'
+                    path: 'Midnight temperatures',
+                    exclusive: true
                 }),
                 new ol.layer.Tile({
-                    title: "Downscaled temperature at midnight on 17th of February",
+                    title: "Temperatures detailed according to 30 x 30 m grid",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
@@ -107,10 +110,11 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     maxResolution: 8550,
                     visible: false,
                     opacity: 0.95,
-                    path: 'Midnight temperatures'
+                    path: 'Midnight temperatures',
+                    exclusive: true
                 }),
                 new ol.layer.Tile({
-                    title: "Downscaled (also taking into account nearlying hydrographic features) temperature at midnight on 17th of February",
+                    title: "Detailed temperatures taking hydrological effect into account",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
@@ -125,11 +129,12 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     maxResolution: 8550,
                     visible: false,
                     opacity: 0.95,
-                    path: 'Midnight temperatures'
+                    path: 'Midnight temperatures',
+                    exclusive: true
                 }),
 
                 new ol.layer.Tile({
-                    title: "Tempeature (at surface level) at noon on 17th of February",
+                    title: "Temperatures on surface calculated directly from 4.5 x 4.5 km grid",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
@@ -144,10 +149,11 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     maxResolution: 8550,
                     visible: false,
                     opacity: 0.95,
-                    path: 'Noon temperatures'
+                    path: 'Noon temperatures',
+                    exclusive: true
                 }),
                 new ol.layer.Tile({
-                    title: "Tempeature (at sea level) at noon on 17th of February",
+                    title: "Temperatures at a sea level calculated directly from 4.5 x 4.5 km grid",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
@@ -162,10 +168,11 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     maxResolution: 8550,
                     visible: false,
                     opacity: 0.95,
-                    path: 'Noon temperatures'
+                    path: 'Noon temperatures',
+                    exclusive: true
                 }),
                 new ol.layer.Tile({
-                    title: "Downscaled temperature at noon on 17th of February",
+                    title: "Temperatures detailed according to 30 x 30 m grid",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
@@ -180,10 +187,11 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     maxResolution: 8550,
                     visible: false,
                     opacity: 0.95,
-                    path: 'Noon temperatures'
+                    path: 'Noon temperatures',
+                    exclusive: true
                 }),
                 new ol.layer.Tile({
-                    title: "Downscaled (also taking into account nearlying hydrographic features) temperature at noon on 17th of February",
+                    title: "Detailed temperatures taking hydrological effect into account",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
                         params: {
