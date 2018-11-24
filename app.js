@@ -216,19 +216,13 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
             ],
             project_name: 'erra/map',
             datasources: [{
-                title: "Datasets",
-                url: "http://otn-dev.intrasoft-intl.com/otnServices-1.0/platform/ckanservices/datasets",
-                language: 'eng',
-                type: "ckan",
-                download: true
-            }, {
-                title: "Services",
+                title: "Micka services",
                 url: "http://cat.ccss.cz/csw/",
                 language: 'eng',
                 type: "micka",
                 code_list_url: 'http://www.whatstheplan.eu/php/metadata/util/codelists.php?_dc=1440156028103&language=eng&page=1&start=0&limit=25&filter=%5B%7B%22property%22%3A%22label%22%7D%5D'
             }, {
-                title: "Hub layers",
+                title: "OTN hub layers",
                 url: "http://opentnet.eu/php/metadata/csw/",
                 language: 'eng',
                 type: "micka",
