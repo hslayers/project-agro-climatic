@@ -47,11 +47,18 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
 
         module.value('config', {
             terrainExaggeration: 6,
+            cesiumAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWZkMGMyZi05NWY2LTQ1YjQtOTg1Yy1iZWUzYmEwN2M0ZWEiLCJpZCI6MTE2MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MzIzMjg3M30.SJ1Q7M850xh3TmhLtQz55mz8d1hhgdttvrPXJg1mv44',
             imageryProvider: Cesium.createOpenStreetMapImageryProvider({
                 url: 'https://stamen-tiles.a.ssl.fastly.net/watercolor/',
                 fileExtension: 'jpg',
                 credit: 'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.'
             }),
+            cesiumTimeline: true,
+            cesiumShadows: true,
+            cesiumTime: Cesium.JulianDate.fromDate(new Date('2016-09-01 11:00:00.000')),
+            createWorldTerrainOptions: {
+                requestVertexNormals: true
+            },
             default_layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM(),
