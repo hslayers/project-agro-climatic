@@ -265,7 +265,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
             status_manager_url: '/wwwlibs/statusmanager2/index.php',
             default_view: new ol.View({
                 center: ol.proj.transform([(15.7 + 16.9601) / 2, (48.4299 + 48.8992) / 2], 'EPSG:4326', 'EPSG:3857'), //Latitude longitude    to Spherical Mercator
-                zoom: 15,
+                zoom: 13,
                 units: "m"
             })
         });
