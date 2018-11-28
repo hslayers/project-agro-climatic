@@ -69,6 +69,23 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                 }),
 
                 new ol.layer.Tile({
+                    title: "DEM - Hillshade",
+                    source: new ol.source.TileWMS({
+                        url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
+                        params: {
+                            LAYERS: 'DEM_hillshade',
+                            FORMAT: "image/png",
+                            INFO_FORMAT: "text/html",
+                            minimumTerrainLevel: 14
+                        },
+                        crossOrigin: null
+                    }),
+                    maxResolution: 8550,
+                    visible: false,
+                    opacity: 0.9
+                }),
+
+                new ol.layer.Tile({
                     title: "Temperatures on surface calculated directly from 4.5 x 4.5 km grid",
                     source: new ol.source.TileWMS({
                         url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
@@ -219,22 +236,6 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                     visible: false,
                     opacity: 0.9,
                     path: 'Noon temperatures'
-                }),
-                new ol.layer.Tile({
-                    title: "DEM - Hillshade",
-                    source: new ol.source.TileWMS({
-                        url: 'http://gis-new.lesprojekt.cz/cgi-bin/mapserv?map=/var/www/html/temperature_downscaling.map',
-                        params: {
-                            LAYERS: 'DEM_hillshade',
-                            FORMAT: "image/png",
-                            INFO_FORMAT: "text/html",
-                            minimumTerrainLevel: 14
-                        },
-                        crossOrigin: null
-                    }),
-                    maxResolution: 8550,
-                    visible: false,
-                    opacity: 0.9
                 })
             ],
             project_name: 'erra/map',
