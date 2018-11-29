@@ -54,7 +54,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
                 credit: 'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.'
             }),
             cesiumTimeline: false,
-            cesiumShadows: true,
+            cesiumShadows: false,
             cesiumTime: Cesium.JulianDate.fromDate(new Date('2016-09-01 11:00:00.000')),
             createWorldTerrainOptions: {
                 requestVertexNormals: true
