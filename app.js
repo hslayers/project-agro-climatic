@@ -1,6 +1,6 @@
 'use strict';
 
-define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 'permalink', 'measure', 'geolocation', 'api', 'hscesium', 'ows', 'bootstrap', 'datasource_selector'],
+define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 'permalink', 'measure', 'geolocation', 'api', 'hscesium', 'ows', 'bootstrap.bundle', 'datasource_selector'],
 
     function(ol, toolbar, layermanager) {
         var module = angular.module('hs', [
@@ -47,6 +47,7 @@ define(['ol', 'toolbar', 'layermanager', 'sidebar', 'query', 'search', 'print', 
 
         module.value('config', {
             terrainExaggeration: 6,
+            cesiumBase: 'node_modules/cesium/Build/Cesium/',
             cesiumAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWZkMGMyZi05NWY2LTQ1YjQtOTg1Yy1iZWUzYmEwN2M0ZWEiLCJpZCI6MTE2MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MzIzMjg3M30.SJ1Q7M850xh3TmhLtQz55mz8d1hhgdttvrPXJg1mv44',
             imageryProvider: Cesium.createOpenStreetMapImageryProvider({
                 url: 'https://stamen-tiles.a.ssl.fastly.net/watercolor/',

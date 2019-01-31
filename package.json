@@ -1,9 +1,9 @@
 {
-  "name": "project-rostenice",
+  "name": "project-agro-climatic",
   "private": false,
   "version": "0.5.5",
   "description": "This application visualises geographical data in a 3D environment. This can help a farmer to better understand the farm fields. The farmer can explore the relation of the yield potential to the topography, slope, orientation and topography wetness index in his/her field. The farmer can check the parts of fields with steep slopes and how the machinery deals with them (checking the machinery tracklogs). The technical details can be found here. The application uses the digital terrain model of fifth generation and the digital surface model of first generation produced by ČÚZK. The application was developed by the DataBio project team for the purposes of the INSPIRE HACK 2017.",
-  "repository": "git+ssh://git@github.com:hslayers/project-rostenice.git",
+  "repository": "git+ssh://git@github.com:hslayers/project-agro-climatic.git",
   "license": "MIT",
   "scripts": {
     "postinstall": "",
@@ -18,14 +18,15 @@
     "protractor": "protractor test/protractor-conf.js"
   },
   "dependencies": {
-    "cesium": "^1.43.0",
+    "cesium": "^1.53.0",
     "jquery": "^3.3.1",
     "requirejs": "^2.3.5"
   },
   "devDependencies": {
     "angular-jsdoc": "^1.5.0",
-    "browserify": "^16.2.0",
-    "grunt": "^1.0.2",
+    "browserify": "^16.2.3",
+    "exposify": "^0.5.0",
+    "grunt": "^1.0.3",
     "grunt-angular-gettext": "^2.3.2",
     "grunt-contrib-uglify": "^3.3.0",
     "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
