@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "allowJs": false,
+        "target": "es5",
+        "emitDecoratorMetadata": true,
+        "lib": ["esnext", "dom"]
+    }
+}

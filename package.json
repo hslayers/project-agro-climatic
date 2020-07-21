@@ -2,6 +2,7 @@
   "name": "project-agro-climatic",
   "private": false,
   "version": "0.5.5",
+  "author": "Raitis Bērziņš BOSC",
   "description": "This application visualises geographical data in a 3D environment. This can help a farmer to better understand the farm fields. The farmer can explore the relation of the yield potential to the topography, slope, orientation and topography wetness index in his/her field. The farmer can check the parts of fields with steep slopes and how the machinery deals with them (checking the machinery tracklogs). The technical details can be found here. The application uses the digital terrain model of fifth generation and the digital surface model of first generation produced by ČÚZK. The application was developed by the DataBio project team for the purposes of the INSPIRE HACK 2017.",
   "repository": "git+ssh://git@github.com:hslayers/project-agro-climatic.git",
   "license": "MIT",
@@ -19,18 +20,32 @@
   },
   "dependencies": {
     "cesium": "^1.53.0",
-    "jquery": "^3.3.1",
-    "requirejs": "^2.3.5"
+    "hslayers-ng": "^2.1.0"
   },
   "devDependencies": {
-    "angular-jsdoc": "^1.5.0",
-    "browserify": "^16.2.3",
-    "exposify": "^0.5.0",
-    "grunt": "^1.0.3",
-    "grunt-angular-gettext": "^2.3.2",
-    "grunt-contrib-uglify": "^3.3.0",
-    "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
-    "grunt-jsbeautifier": "0.2.x",
-    "grunt-jsdoc": "^2.2.1"
+    "webpack": "^4.39.3",
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-angularjs-annotate": "^0.10.0",
+    "clean-webpack-plugin": "^2.0.2",
+    "css-loader": "^2.1.1",
+    "extract-loader": "^3.1.0",
+    "file-loader": "^3.0.1",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.6.0",
+    "ng-annotate-loader": "^0.7.0",
+    "npm-run-all": "^4.1.5",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "postcss": "^7.0.26",
+    "postcss-prefix-selector": "^1.7.1",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "url-loader": "^2.1.0",
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.10.1",
+    "webpack-merge": "^4.2.2"
   }
 }
