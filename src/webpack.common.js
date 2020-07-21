@@ -40,8 +40,16 @@ module.exports = {
       // We manually inject css and js files in our template
       inject: false
       // favicon: 'assets/img/favicon.ico'
-    })
+    }),
   ],
+  amd: {
+    // Enable webpack-friendly use of require in Cesium
+    toUrlUndefined: true
+  },
+  node: {
+      // Resolve node module use of fs
+      fs: 'empty'
+  },
   module: {
     rules: [
       {

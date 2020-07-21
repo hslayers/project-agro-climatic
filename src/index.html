@@ -15,11 +15,14 @@ The application was developed by the DataBio project team for the purposes of th
   <style>
   .hs-lm-warning-scale{visibility:hidden}
   </style>
-  <link rel="stylesheet" href="node_modules/cesium/Build/Cesium/Widgets/widgets.css" />
+    <% for (var css in htmlWebpackPlugin.files.css) { %>
+    <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
+  <% } %>
 </head>
 <body >
     <hs ng-controller="Main" style="position: relative;"></hs>
-    <script src="node_modules/cesium/Build/Cesium/Cesium.js"></script>
-    <script src="bundle.min.js"></script>    
+    <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+      <script type="application/javascript" src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
 </body>
 </html>

@@ -10,6 +10,7 @@ import 'hslayers-ng/components/info/info.module';
 import 'hslayers-ng/components/datasource-selector/datasource-selector.module';
 import 'hslayers-ng/components/sidebar/sidebar.module';
 import 'hslayers-ng/components/draw/draw.module';
+import 'hslayers-ng/components/hscesium/hscesium.module';
 import * as angular from 'angular';
 import View from 'ol/View';
 import { Tile, Group, Image as ImageLayer } from 'ol/layer';
@@ -53,7 +54,7 @@ function getHostname() {
 
 module.value('HsConfig', {
   proxyPrefix: '../proxy/',
-  cesiumBase: 'node_modules/cesium/Build/Cesium/',
+  cesiumBase: '../node_modules/cesium/Build/Cesium/',
   cesiumAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWZkMGMyZi05NWY2LTQ1YjQtOTg1Yy1iZWUzYmEwN2M0ZWEiLCJpZCI6MTE2MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MzIzMjg3M30.SJ1Q7M850xh3TmhLtQz55mz8d1hhgdttvrPXJg1mv44',          
   default_layers: [
     new Tile({
