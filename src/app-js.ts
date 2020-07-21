@@ -4,7 +4,7 @@ import 'hslayers-ng/components/print/print.module';
 import 'hslayers-ng/components/query/query.module';
 import 'hslayers-ng/components/search/search.module';
 import 'hslayers-ng/components/add-layers/add-layers.module';
-import 'hslayers-ng/components/measure/measure.module';
+import 'hslayers-ng/components/measure/';
 import 'hslayers-ng/components/permalink/permalink.module';
 import 'hslayers-ng/components/info/info.module';
 import 'hslayers-ng/components/datasource-selector/datasource-selector.module';
@@ -18,6 +18,8 @@ import { OSM } from 'ol/source';
 import { Style, Stroke, Fill } from 'ol/style';
 import { Vector as VectorSource } from 'ol/source';
 import VectorLayer from 'ol/layer/Vector';
+import { HsEventBusService } from 'hslayers-ng/components/core/event-bus.service';
+import { AcVisualizer } from './ac-visualizer';
 
 var module = angular.module('hs', [
   'hs.sidebar',
@@ -54,7 +56,10 @@ function getHostname() {
 
 module.value('HsConfig', {
   proxyPrefix: '../proxy/',
-  cesiumBase: '../node_modules/cesium/Build/Cesium/',
+  cesiumBase: './',
+  cesiumTimeline: true,
+  cesiumdDebugShowFramesPerSecond: true,
+  cesiumAnimation: true,
   cesiumAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWZkMGMyZi05NWY2LTQ1YjQtOTg1Yy1iZWUzYmEwN2M0ZWEiLCJpZCI6MTE2MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MzIzMjg3M30.SJ1Q7M850xh3TmhLtQz55mz8d1hhgdttvrPXJg1mv44',          
   default_layers: [
     new Tile({
@@ -98,13 +103,16 @@ module.value('HsConfig', {
   }
 });
 
-module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService) {
+module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, HsEventBusService: HsEventBusService) {
   'ngInject';
   $scope.panelVisible = (which) => HsLayoutService.panelVisible(which);
   HsLayoutService.sidebarRight = true;
   //layoutService.sidebarToggleable = false;
   HsCore.singleDatasources = true;
   HsLayoutService.sidebarButtons = true;
+  HsEventBusService.cesiumLoads.subscribe((data) => {
+    const visualizer = new AcVisualizer(data.viewer);
+  })
 }
 );
 
