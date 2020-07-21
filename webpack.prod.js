@@ -56,6 +56,7 @@ module.exports = merge(common, {
         }
       }
     },
+    usedExports: true,
     minimizer: [
       // JS minifier/uglifier
       new TerserPlugin({
