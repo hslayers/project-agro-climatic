@@ -72,8 +72,8 @@ module.value('HsConfig', {
   ],
   project_name: 'erra/map',
   default_view: new View({
-    center: [2838384.1419443055, 7837925.97841041],
-    zoom: 9,
+    center: [1452777.8396518824, 6355469.183800302],
+    zoom: 10,
     units: "m"
   }),
   advanced_form: true,
