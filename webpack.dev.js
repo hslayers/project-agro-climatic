@@ -12,7 +12,6 @@ const common = require('./webpack.common');
 const path = require('path');
 const webpack = require('webpack');
 const env = process.env;
-
 module.exports = merge(common, {
   mode: 'development',
   devtool: 'cheap-eval-source-map',
@@ -21,7 +20,7 @@ module.exports = merge(common, {
     poll: 1000
   },
   resolve: {
-    symlinks: true
+    symlinks: true,
   },
   optimization: {
     // see https://webpack.js.org/guides/build-performance#avoid-extra-optimization-steps
@@ -36,7 +35,11 @@ module.exports = merge(common, {
     filename: '[name].bundle.js'
   },
   devServer: {
-    contentBase: './static',
+    contentBase: [
+      path.resolve(__dirname, "static"),
+      path.resolve(__dirname, "node_modules")
+    ],
+    publicPath:  "/",
     hot: false,
     host: '0.0.0.0',
     liveReload: true,
@@ -63,7 +66,7 @@ module.exports = merge(common, {
       // Load angularJS partials HTML file as URL
       {
         test: /\.html$/,
-        exclude: path.resolve(__dirname, '../src/index.html'),
+        exclude: path.resolve(__dirname, './src/index.html'),
         use: [
           'html-loader',
         ]

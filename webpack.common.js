@@ -12,24 +12,33 @@
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const hslPaths = require(path.join(__dirname, '../node_modules/hslayers-ng/common_paths'));
+const hslPaths = require(path.join(__dirname, './node_modules/hslayers-ng/common_paths'));
+const cesiumSource = 'node_modules/cesium/Source';
+const cesiumWorkers = '../Build/Cesium/Workers';
+const CopywebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 module.exports = {
-  entry: { main: 'main.ts' },
+  entry: { main: 'src/main.ts' },
   output: {
     // Path where bundled files will be output
-    path: path.resolve(__dirname, '../static'),
+    path: path.resolve(__dirname, './static'),
     // Path at which output assets will be served
-    publicPath: ''
+    publicPath: '',
+    // Needed to compile multiline strings in Cesium
+    sourcePrefix: ''
   },
   // Just for build speed improvement
-  resolve: { symlinks: true,
+  resolve: {
+    symlinks: true,
     extensions: ['.tsx', '.ts', '.js'],
     modules: [
       path.join(__dirname),
-      path.join(__dirname, "../node_modules"),
-      path.resolve(path.join(__dirname, "../node_modules", "hslayers-ng"))
-    ].concat(hslPaths.paths)},
+      path.join(__dirname, "./node_modules"),
+      path.resolve(path.join(__dirname, "./node_modules", "hslayers-ng"))
+    ].concat(hslPaths.paths)
+  },
   plugins: [
     // Clean before build
     new CleanWebpackPlugin(),
@@ -41,14 +50,17 @@ module.exports = {
       inject: false
       // favicon: 'assets/img/favicon.ico'
     }),
+    new CopywebpackPlugin({ patterns: [{ from: path.resolve(path.join(cesiumSource, cesiumWorkers)), to: 'Workers' }] }),
+    new CopywebpackPlugin({ patterns: [{ from: path.join(cesiumSource, 'Assets'), to: 'Assets' }] }),
+    new CopywebpackPlugin({ patterns: [{ from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' }] })
   ],
   amd: {
     // Enable webpack-friendly use of require in Cesium
     toUrlUndefined: true
   },
   node: {
-      // Resolve node module use of fs
-      fs: 'empty'
+    // Resolve node module use of fs
+    fs: 'empty'
   },
   module: {
     rules: [
@@ -56,7 +68,7 @@ module.exports = {
         test: /\.ts$/,
         use: [
           { loader: 'ng-annotate-loader' },
-          { loader: 'ts-loader', options: { allowTsInNodeModules: true }},
+          { loader: 'ts-loader', options: { allowTsInNodeModules: true } },
         ],
         exclude: /node_modules\/(?!(hslayers-ng)\/).*/,
       },
