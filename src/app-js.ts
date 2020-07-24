@@ -16,9 +16,8 @@ import View from 'ol/View';
 import { Tile, Group, Image as ImageLayer } from 'ol/layer';
 import { OSM } from 'ol/source';
 import { Style, Stroke, Fill } from 'ol/style';
-import { Vector as VectorSource } from 'ol/source';
-import VectorLayer from 'ol/layer/Vector';
 import { HsEventBusService } from 'hslayers-ng/components/core/event-bus.service';
+import EllipsoidTerrainProvider from 'cesium/Source/Core/EllipsoidTerrainProvider'
 import { AcVisualizer } from './ac-visualizer';
 
 var module = angular.module('hs', [
@@ -60,6 +59,7 @@ module.value('HsConfig', {
   cesiumTimeline: true,
   cesiumdDebugShowFramesPerSecond: true,
   cesiumAnimation: true,
+  terrain_provider: new EllipsoidTerrainProvider(),
   cesiumAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWZkMGMyZi05NWY2LTQ1YjQtOTg1Yy1iZWUzYmEwN2M0ZWEiLCJpZCI6MTE2MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MzIzMjg3M30.SJ1Q7M850xh3TmhLtQz55mz8d1hhgdttvrPXJg1mv44',          
   default_layers: [
     new Tile({
@@ -103,7 +103,7 @@ module.value('HsConfig', {
   }
 });
 
-module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, HsEventBusService: HsEventBusService) {
+module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, HsEventBusService: HsEventBusService, HsMapService) {
   'ngInject';
   $scope.panelVisible = (which) => HsLayoutService.panelVisible(which);
   HsLayoutService.sidebarRight = true;
@@ -111,7 +111,7 @@ module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, H
   HsCore.singleDatasources = true;
   HsLayoutService.sidebarButtons = true;
   HsEventBusService.cesiumLoads.subscribe((data) => {
-    const visualizer = new AcVisualizer(data.viewer);
+    const visualizer = new AcVisualizer(data.viewer, HsMapService, HsEventBusService);
   })
 }
 );
