@@ -9,12 +9,23 @@ import VectorLayer from 'ol/layer/Vector';
 import { HsMapService } from 'hslayers-ng/components/map/map.service';
 import { HsEventBusService } from 'hslayers-ng/components/core/event-bus.service';
 import PropertyBag from 'cesium/Source/DataSources/PropertyBag';
+import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
+import Map from 'ol/Map';
 
 export class AcVisualizer {
     barOffsets: any = {};
     stackPartsStatus = {};
+    HsMapService: HsMapService;
+    HsEventBusService: HsEventBusService;
 
-    constructor(private viewer: any, HsMapService: HsMapService, HsEventBusService: HsEventBusService) {
+    constructor(private viewer: Viewer, HsMapService: HsMapService, HsEventBusService: HsEventBusService) {
+      this.HsMapService = HsMapService;
+      this.HsEventBusService = HsEventBusService;
+      this.init(viewer);  
+    }
+
+    async init(viewer: Viewer){
+        const map:Map = await this.HsMapService.loaded();
         const LGPC3 = require('./annual_LGP_C3_1982-2019.json');
         const LGPC4 = require('./annual_LGP_C4_1982-2019.json');
         const LOGPC3 = require('./annual_LOGP_C3_1982-2019.json');
@@ -28,7 +39,7 @@ export class AcVisualizer {
         const LOGPC4Source = new VectorSource();
         const LOGPC4Layer = new VectorLayer({ source: LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });
         for (let layer of [LGPC3Layer, LGPC4Layer, LOGPC3Layer, LOGPC4Layer]) {
-            HsMapService.map.addLayer(layer);
+            map.addLayer(layer);
             this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = true;
             layer.on('change:visible', (e) => {
                 const show = e.target.getVisible();
@@ -61,7 +72,6 @@ export class AcVisualizer {
                 }
             });
         }
-
 
         viewer.clock.multiplier = 10000000;
         viewer.clock.currentTime = JulianDate.fromDate(new Date(1982, 1, 1));

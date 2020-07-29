@@ -9,9 +9,10 @@ import {BootstrapComponent} from 'hslayers-ng/bootstrap.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {HsCoreModule} from 'hslayers-ng/components/core/core.module';
 import {UpgradeModule} from '@angular/upgrade/static';
+import { HsCesiumModule } from 'hslayers-ng/components/hscesium';
 
 @NgModule({
-  imports: [BrowserModule, UpgradeModule, HsCoreModule],
+  imports: [BrowserModule, UpgradeModule, HsCoreModule, HsCesiumModule],
   declarations: [],
   entryComponents: [],
   providers: [

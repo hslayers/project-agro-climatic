@@ -10,7 +10,7 @@ import 'hslayers-ng/components/info/info.module';
 import 'hslayers-ng/components/datasource-selector/datasource-selector.module';
 import 'hslayers-ng/components/sidebar/sidebar.module';
 import 'hslayers-ng/components/draw/draw.module';
-import 'hslayers-ng/components/hscesium/hscesium.module';
+import 'hslayers-ng/components/hscesium/';
 import * as angular from 'angular';
 import View from 'ol/View';
 import { Tile, Group, Image as ImageLayer } from 'ol/layer';
