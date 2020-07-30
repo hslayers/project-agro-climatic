@@ -24,6 +24,19 @@ export class AcVisualizer {
     newOlLayersAdded: Array<BaseLayer> = [];
     viewer: Viewer;
     entitiesByYear: any = {};
+    LGPC3 = require('./annual_LGP_C3_1982-2019.json');
+    LGPC4 = require('./annual_LGP_C4_1982-2019.json');
+    LOGPC3 = require('./annual_LOGP_C3_1982-2019.json');
+    LOGPC4 = require('./annual_LOGP_C4_1982-2019.json');
+    LGPC3Source = new VectorSource();
+    LGPC3Layer = new VectorLayer({ source: this.LGPC3Source, title: 'LGPC3', stackIndex: 0, kind: 'LGP' });
+    LGPC4Source = new VectorSource();
+    LGPC4Layer = new VectorLayer({ source: this.LGPC4Source, title: 'LGPC4', stackIndex: 1, kind: 'LGP' });
+    LOGPC3Source = new VectorSource();
+    LOGPC3Layer = new VectorLayer({ source: this.LGPC3Source, title: 'LOGPC3', stackIndex: 0, kind: 'LOGP' });
+    LOGPC4Source = new VectorSource();
+    LOGPC4Layer = new VectorLayer({ source: this.LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });
+    
 
     constructor(private HsMapService: HsMapService, private HsEventBusService: HsEventBusService) {
         this.HsEventBusService.cesiumLoads.subscribe((data) => {
@@ -41,19 +54,7 @@ export class AcVisualizer {
         this.newOlLayersAdded = [];
         this.stackPartsStatus = {};
         this.barOffsets = {};
-        const LGPC3 = require('./annual_LGP_C3_1982-2019.json');
-        const LGPC4 = require('./annual_LGP_C4_1982-2019.json');
-        const LOGPC3 = require('./annual_LOGP_C3_1982-2019.json');
-        const LOGPC4 = require('./annual_LOGP_C4_1982-2019.json');
-        const LGPC3Source = new VectorSource();
-        const LGPC3Layer = new VectorLayer({ source: LGPC3Source, title: 'LGPC3', stackIndex: 0, kind: 'LGP' });
-        const LGPC4Source = new VectorSource();
-        const LGPC4Layer = new VectorLayer({ source: LGPC4Source, title: 'LGPC4', stackIndex: 1, kind: 'LGP' });
-        const LOGPC3Source = new VectorSource();
-        const LOGPC3Layer = new VectorLayer({ source: LGPC3Source, title: 'LOGPC3', stackIndex: 0, kind: 'LOGP' });
-        const LOGPC4Source = new VectorSource();
-        const LOGPC4Layer = new VectorLayer({ source: LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });
-        for (let layer of [LGPC3Layer, LGPC4Layer, LOGPC3Layer, LOGPC4Layer]) {
+        for (let layer of [this.LGPC3Layer, this.LGPC4Layer, this.LOGPC3Layer, this.LOGPC4Layer]) {
             map.addLayer(layer);
             this.newOlLayersAdded.push(layer);
             this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = true;
@@ -63,44 +64,53 @@ export class AcVisualizer {
         viewer.clock.multiplier = 10000000;
         viewer.clock.currentTime = JulianDate.fromDate(new Date(1982, 1, 1));
         viewer.timeline.zoomTo(JulianDate.fromDate(new Date(1982, 1, 1)), JulianDate.fromDate(new Date(2019, 1, 1)))
-        for (let year = 1982; year < 2019; year++) {
-            const availability = new TimeIntervalCollection([
-                new TimeInterval({
-                    start: JulianDate.fromDate(new Date(year, 1, 1)),
-                    stop: JulianDate.fromDate(new Date(year + 1, 1, 1))
-                })
-            ]);
-
-            for (const feature of LGPC3.features) {
-                this.createBar({ feature, hue: 0, stackIndex: 0, year, showProperty: availability, width: 3000.0, alpha: 1, crop: 'C3', layer: LGPC3Layer, kind: 'LGP' })
-            }
-
-            for (const feature of LGPC4.features) {
-                this.createBar({ feature, hue: 0.36, stackIndex: 1, year, showProperty: availability, width: 3000.0, alpha: 1, crop: 'C4', layer: LGPC4Layer, kind: 'LGP' })
-            }
-
-            for (const feature of LOGPC3.features) {
-                this.createBar({ feature, hue: 0, stackIndex: 0, year, showProperty: availability, width: 5000.0, alpha: 0.5, crop: 'C3', layer: LOGPC3Layer, kind: 'LOGP' })
-            }
-
-            for (const feature of LOGPC4.features) {
-                this.createBar({ feature, hue: 0.36, stackIndex: 1, year, showProperty: availability, width: 5000.0, alpha: 0.5, crop: 'C4', layer: LOGPC4Layer, kind: 'LOGP' })
-            }
-        }
-        setInterval(() => this.timer(), 1000);
+        
+        setInterval(() => this.timer(), 200);
     }
 
     lastYear = 0;
+    private loadEntitiesForYear(year: number, LGPC3: any, LGPC3Layer: any, LGPC4: any, LGPC4Layer: any, LOGPC3: any, LOGPC3Layer: any, LOGPC4: any, LOGPC4Layer: any) {
+        const availability = new TimeIntervalCollection([
+            new TimeInterval({
+                start: JulianDate.fromDate(new Date(year, 1, 1)),
+                stop: JulianDate.fromDate(new Date(year + 1, 1, 1))
+            })
+        ]);
+
+        for (const feature of LGPC3.features) {
+            this.createBar({ feature, hue: 0, stackIndex: 0, year, showProperty: availability, width: 3000.0, alpha: 1, crop: 'C3', layer: LGPC3Layer, kind: 'LGP' });
+        }
+
+        for (const feature of LGPC4.features) {
+            this.createBar({ feature, hue: 0.36, stackIndex: 1, year, showProperty: availability, width: 3000.0, alpha: 1, crop: 'C4', layer: LGPC4Layer, kind: 'LGP' });
+        }
+
+        for (const feature of LOGPC3.features) {
+            this.createBar({ feature, hue: 0, stackIndex: 0, year, showProperty: availability, width: 5000.0, alpha: 0.5, crop: 'C3', layer: LOGPC3Layer, kind: 'LOGP' });
+        }
+
+        for (const feature of LOGPC4.features) {
+            this.createBar({ feature, hue: 0.36, stackIndex: 1, year, showProperty: availability, width: 5000.0, alpha: 0.5, crop: 'C4', layer: LOGPC4Layer, kind: 'LOGP' });
+        }
+    }
+
     timer() {
         if(!this.viewer || this.viewer.isDestroyed()) return;
         if (JulianDate.toDate(this.viewer.clock.currentTime).getFullYear() != this.lastYear) {
             this.lastYear = JulianDate.toDate(this.viewer.clock.currentTime).getFullYear();
+            this.viewer.entities.suspendEvents();
+            this.viewer.entities.removeAll();
+            if(!this.entitiesByYear[this.lastYear])
+                this.loadEntitiesForYear(this.lastYear, this.LGPC3, this.LGPC3Layer, this.LGPC4, this.LGPC4Layer, this.LOGPC3, this.LOGPC3Layer, this.LOGPC4, this.LOGPC4Layer);
+            else {
+                for(let entity of <Array<Entity>>this.entitiesByYear[this.lastYear]){
+                    this.viewer.entities.add(entity);
+                }
+            }
             for (let entity of this.entitiesByYear[this.lastYear]) {
                 this.calcEntityStackPosition(entity, entity.properties.kind.getValue(), 0);
             }
-            for (let entity of this.entitiesByYear[this.lastYear + 1]) {
-                this.calcEntityStackPosition(entity, entity.properties.kind.getValue(), 0);
-            }
+            this.viewer.entities.resumeEvents();
         }
     }
 
@@ -164,6 +174,7 @@ export class AcVisualizer {
         //The polyline instance itself needs to be on an entity.
         var entity = new Entity({
             position: surfacePosition,
+            show: layer.getVisible(),
             availability: showProperty,
             properties: new PropertyBag({ layer, stackIndex, kind, longitude, latitude, halfHeight, year }),
             box: {
