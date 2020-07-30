@@ -11,21 +11,33 @@ import { HsEventBusService } from 'hslayers-ng/components/core/event-bus.service
 import PropertyBag from 'cesium/Source/DataSources/PropertyBag';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import Map from 'ol/Map';
+import BaseLayer from 'ol/layer/Base';
+import {Injectable} from '@angular/core';
 
+@Injectable({
+    providedIn: 'root',
+  })
 export class AcVisualizer {
     barOffsets: any = {};
     stackPartsStatus = {};
-    HsMapService: HsMapService;
-    HsEventBusService: HsEventBusService;
+    newOlLayersAdded: Array<BaseLayer> = [];
+    viewer: Viewer;
 
-    constructor(private viewer: Viewer, HsMapService: HsMapService, HsEventBusService: HsEventBusService) {
-      this.HsMapService = HsMapService;
-      this.HsEventBusService = HsEventBusService;
-      this.init(viewer);  
+    constructor(private HsMapService: HsMapService, private HsEventBusService: HsEventBusService) {
+        this.HsEventBusService.cesiumLoads.subscribe((data) => {
+            this.init(data.viewer);
+        })
     }
 
     async init(viewer: Viewer){
+        this.viewer = viewer;
         const map:Map = await this.HsMapService.loaded();
+        for (let layer of this.newOlLayersAdded) {
+            map.removeLayer(layer);
+        }
+        this.newOlLayersAdded = [];
+        this.stackPartsStatus = {};
+        this.barOffsets = {};
         const LGPC3 = require('./annual_LGP_C3_1982-2019.json');
         const LGPC4 = require('./annual_LGP_C4_1982-2019.json');
         const LOGPC3 = require('./annual_LOGP_C3_1982-2019.json');
@@ -40,6 +52,7 @@ export class AcVisualizer {
         const LOGPC4Layer = new VectorLayer({ source: LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });
         for (let layer of [LGPC3Layer, LGPC4Layer, LOGPC3Layer, LOGPC4Layer]) {
             map.addLayer(layer);
+            this.newOlLayersAdded.push(layer);
             this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = true;
             layer.on('change:visible', (e) => {
                 const show = e.target.getVisible();

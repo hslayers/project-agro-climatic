@@ -19,8 +19,16 @@ import { Style, Stroke, Fill } from 'ol/style';
 import { HsEventBusService } from 'hslayers-ng/components/core/event-bus.service';
 import EllipsoidTerrainProvider from 'cesium/Source/Core/EllipsoidTerrainProvider'
 import { AcVisualizer } from './ac-visualizer';
+import {AppModule} from './app.module';
+
+import {downgrade} from 'hslayers-ng/common/downgrader';
+import {downgradeInjectable} from '@angular/upgrade/static';
+export const downgradedModule = downgrade(AppModule);
+
+angular.module(downgradedModule, []).service('AcVisualizer', downgradeInjectable(AcVisualizer));
 
 var module = angular.module('hs', [
+  downgradedModule,
   'hs.sidebar',
   'hs.draw',
   'hs.info',
@@ -103,16 +111,10 @@ module.value('HsConfig', {
   }
 });
 
-module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, HsEventBusService: HsEventBusService, HsMapService) {
+module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, HsEventBusService: HsEventBusService, AcVisualizer) {
   'ngInject';
-  $scope.panelVisible = (which) => HsLayoutService.panelVisible(which);
   HsLayoutService.sidebarRight = true;
   //layoutService.sidebarToggleable = false;
-  HsCore.singleDatasources = true;
-  HsLayoutService.sidebarButtons = true;
-  HsEventBusService.cesiumLoads.subscribe((data) => {
-    const visualizer = new AcVisualizer(data.viewer, HsMapService, HsEventBusService);
-  })
 }
 );
 

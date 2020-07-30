@@ -9,13 +9,15 @@ import {BootstrapComponent} from 'hslayers-ng/bootstrap.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {HsCoreModule} from 'hslayers-ng/components/core/core.module';
 import {UpgradeModule} from '@angular/upgrade/static';
-import { HsCesiumModule } from 'hslayers-ng/components/hscesium';
+import { HsCesiumModule } from 'hslayers-ng/components/hscesium/hscesium.module';
+import { AcVisualizer } from './ac-visualizer';
 
 @NgModule({
   imports: [BrowserModule, UpgradeModule, HsCoreModule, HsCesiumModule],
   declarations: [],
   entryComponents: [],
   providers: [
+    AcVisualizer,
     {
       provide: APP_BOOTSTRAP_LISTENER,
       multi: true,
