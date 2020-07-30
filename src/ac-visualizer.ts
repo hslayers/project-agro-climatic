@@ -92,6 +92,7 @@ export class AcVisualizer {
 
     lastYear = 0;
     timer() {
+        if(!this.viewer || this.viewer.isDestroyed()) return;
         if (JulianDate.toDate(this.viewer.clock.currentTime).getFullYear() != this.lastYear) {
             this.lastYear = JulianDate.toDate(this.viewer.clock.currentTime).getFullYear();
             for (let entity of this.entitiesByYear[this.lastYear]) {
