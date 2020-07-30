@@ -12,16 +12,18 @@ import PropertyBag from 'cesium/Source/DataSources/PropertyBag';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import Map from 'ol/Map';
 import BaseLayer from 'ol/layer/Base';
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
+import { PositionProperty, ConstantPositionProperty } from 'cesium';
 
 @Injectable({
     providedIn: 'root',
-  })
+})
 export class AcVisualizer {
     barOffsets: any = {};
     stackPartsStatus = {};
     newOlLayersAdded: Array<BaseLayer> = [];
     viewer: Viewer;
+    entitiesByYear: any = {};
 
     constructor(private HsMapService: HsMapService, private HsEventBusService: HsEventBusService) {
         this.HsEventBusService.cesiumLoads.subscribe((data) => {
@@ -29,12 +31,13 @@ export class AcVisualizer {
         })
     }
 
-    async init(viewer: Viewer){
+    async init(viewer: Viewer) {
         this.viewer = viewer;
-        const map:Map = await this.HsMapService.loaded();
+        const map: Map = await this.HsMapService.loaded();
         for (let layer of this.newOlLayersAdded) {
             map.removeLayer(layer);
         }
+        this.entitiesByYear = {};
         this.newOlLayersAdded = [];
         this.stackPartsStatus = {};
         this.barOffsets = {};
@@ -54,36 +57,7 @@ export class AcVisualizer {
             map.addLayer(layer);
             this.newOlLayersAdded.push(layer);
             this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = true;
-            layer.on('change:visible', (e) => {
-                const show = e.target.getVisible();
-                const kind = e.target.get('kind');
-                const stackIndex = e.target.get('stackIndex');
-                this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = show;
-                for(let entity of this.viewer.entities.values){
-                    if(entity.properties.layer.getValue() == e.target){
-                        entity.show = show;
-                    }
-                    const entityStackIndex = entity.properties.stackIndex.getValue();
-                    if(entity.properties.kind.getValue() == kind && entityStackIndex > stackIndex){
-                        const longitude = entity.properties.longitude.getValue();
-                        const latitude = entity.properties.latitude.getValue();
-                        const year = entity.properties.year.getValue();
-                        let newSurfaceHeight = 0;
-                        for(let i=0; i<entityStackIndex;i++){
-                            if(this.stackPartsStatus[`${kind} ${i}`]){
-                                const increment = this.barOffsets[`${kind} ${year} ${i} ${longitude} ${latitude}`] - (i > 0 ? this.barOffsets[`${kind} ${year} ${i - 1} ${longitude} ${latitude}`] : 0);
-                                newSurfaceHeight += increment;
-                            }                            
-                        }
-                        
-                        entity.position = Cartesian3.fromDegrees(
-                            longitude,
-                            latitude,
-                            newSurfaceHeight + entity.properties.halfHeight.getValue()
-                        )
-                    }
-                }
-            });
+            this.monitorLayerChanges(layer);
         }
 
         viewer.clock.multiplier = 10000000;
@@ -113,6 +87,59 @@ export class AcVisualizer {
                 this.createBar({ feature, hue: 0.36, stackIndex: 1, year, showProperty: availability, width: 5000.0, alpha: 0.5, crop: 'C4', layer: LOGPC4Layer, kind: 'LOGP' })
             }
         }
+        setInterval(() => this.timer(), 1000);
+    }
+
+    lastYear = 0;
+    timer() {
+        if (JulianDate.toDate(this.viewer.clock.currentTime).getFullYear() != this.lastYear) {
+            this.lastYear = JulianDate.toDate(this.viewer.clock.currentTime).getFullYear();
+            for (let entity of this.entitiesByYear[this.lastYear]) {
+                this.calcEntityStackPosition(entity, entity.properties.kind.getValue(), 0);
+            }
+            for (let entity of this.entitiesByYear[this.lastYear + 1]) {
+                this.calcEntityStackPosition(entity, entity.properties.kind.getValue(), 0);
+            }
+        }
+    }
+
+    private monitorLayerChanges(layer: any) {
+        layer.on('change:visible', (e) => {
+            const show = e.target.getVisible();
+            const kind = e.target.get('kind');
+            const stackIndex = e.target.get('stackIndex');
+            this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = show;
+            for (let entity of this.viewer.entities.values) {
+                if (entity.properties.layer.getValue() == e.target) {
+                    entity.show = show;
+                }
+                if (!entity.isAvailable(this.viewer.clock.currentTime))
+                    continue;
+                this.calcEntityStackPosition(entity, kind, stackIndex);
+            }
+        });
+    }
+
+    private calcEntityStackPosition(entity: Entity, kind: any, stackIndex: any) {
+        const entityStackIndex = entity.properties.stackIndex.getValue();
+        if (entity.properties.kind.getValue() == kind && entityStackIndex > stackIndex) {
+            const longitude = entity.properties.longitude.getValue();
+            const latitude = entity.properties.latitude.getValue();
+            const year = entity.properties.year.getValue();
+            let newSurfaceHeight = 0;
+            for (let i = 0; i < entityStackIndex; i++) {
+                if (this.stackPartsStatus[`${kind} ${i}`]) {
+                    const increment = this.barOffsets[`${kind} ${year} ${i} ${longitude} ${latitude}`] - (i > 0 ? this.barOffsets[`${kind} ${year} ${i - 1} ${longitude} ${latitude}`] : 0);
+                    newSurfaceHeight += increment;
+                }
+            }
+
+            entity.position = new ConstantPositionProperty(Cartesian3.fromDegrees(
+                longitude,
+                latitude,
+                newSurfaceHeight + entity.properties.halfHeight.getValue())
+            );
+        }
     }
 
     createBar({ feature, hue, stackIndex, year, showProperty, width, alpha, crop, layer, kind }) {
@@ -137,7 +164,7 @@ export class AcVisualizer {
         var entity = new Entity({
             position: surfacePosition,
             availability: showProperty,
-            properties: new PropertyBag({layer, stackIndex, kind, longitude, latitude, halfHeight, year}),
+            properties: new PropertyBag({ layer, stackIndex, kind, longitude, latitude, halfHeight, year }),
             box: {
                 dimensions: new Cartesian3(width, width, height * heightScale),
                 material: Color.fromHsl(hue, 0.65, 0.48).withAlpha(alpha),
@@ -145,6 +172,8 @@ export class AcVisualizer {
                 outlineColor: Color.fromHsl(hue, 0.8, 0.3).withAlpha(alpha),
             },
         });
+        if(this.entitiesByYear[year] == undefined) this.entitiesByYear[year] = [];
+        this.entitiesByYear[year].push(entity);
 
         //Add the entity to the collection.
         this.viewer.entities.add(entity);
