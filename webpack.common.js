@@ -52,7 +52,8 @@ module.exports = {
     }),
     new CopywebpackPlugin({ patterns: [{ from: path.resolve(path.join(cesiumSource, cesiumWorkers)), to: 'Workers' }] }),
     new CopywebpackPlugin({ patterns: [{ from: path.join(cesiumSource, 'Assets'), to: 'Assets' }] }),
-    new CopywebpackPlugin({ patterns: [{ from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' }] })
+    new CopywebpackPlugin({ patterns: [{ from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' }] }),
+    new CopywebpackPlugin({ patterns: [{ from: 'assets', to: './' }] })
   ],
   amd: {
     // Enable webpack-friendly use of require in Cesium

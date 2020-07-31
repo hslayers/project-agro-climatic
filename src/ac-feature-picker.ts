@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import Color from 'cesium/Source/Core/Color';
 import Entity from 'cesium/Source/DataSources/Entity';
-import { ScreenSpaceEventType, PostProcessStageLibrary, defined, Viewer, Property, ConstantProperty } from 'cesium';
+import { ScreenSpaceEventType, PostProcessStageLibrary, defined, Viewer, Property, ConstantProperty, DataSource } from 'cesium';
 @Injectable({
     providedIn: 'root',
 })
@@ -17,6 +17,8 @@ export class AcFeaturePicker {
     silhouetteBlue: import("cesium").PostProcessStageComposite;
     silhouetteGreen: any;
     nameOverlay: HTMLDivElement;
+    viewer: Viewer;
+    barsDataSource: DataSource;
 
     createOverlay(viewer: Viewer) {
         const nameOverlay = document.createElement("div");
@@ -34,7 +36,9 @@ export class AcFeaturePicker {
 
     }
 
-    init(viewer: Viewer) {
+    init(viewer: Viewer, barsDataSource: DataSource) {
+        this.viewer = viewer;
+        this.barsDataSource = barsDataSource;
         this.createOverlay(viewer);
         // Get default left click handler for when a feature is not picked on left click
         this.clickHandler = viewer.screenSpaceEventHandler.getInputAction(
@@ -63,36 +67,6 @@ export class AcFeaturePicker {
                     this.silhouetteGreen,
                 ])
             );
-
-            // Silhouette a feature blue on hover.
-            viewer.screenSpaceEventHandler.setInputAction((
-                movement
-            ) => {
-                // If a feature was previously highlighted, undo the highlight
-                this.silhouetteBlue.selected = [];
-
-                // Pick a new feature
-                var pickedFeature = viewer.scene.pick(movement.endPosition);
-                if (!defined(pickedFeature)) {
-                    this.nameOverlay.style.display = "none";
-                    return;
-                }
-                pickedFeature = pickedFeature.id;
-
-                // A feature was picked, so show it's overlay content
-                this.nameOverlay.style.display = "block";
-                this.nameOverlay.style.bottom =
-                    viewer.canvas.clientHeight - movement.endPosition.y + "px";
-                this.nameOverlay.style.left = movement.endPosition.x + "px";
-                var name = `${pickedFeature.properties.kind.valueOf()} ${pickedFeature.properties.crop.valueOf()} ${pickedFeature.properties.height.valueOf()}`;
-                this.nameOverlay.textContent = name;
-
-                // Highlight the feature if it's not already selected.
-                if (pickedFeature !== this.selected.feature) {
-                    this.silhouetteBlue.selected = [pickedFeature];
-                }
-            },
-                ScreenSpaceEventType.MOUSE_MOVE);
 
             // Silhouette a feature on selection and show metadata in the InfoBox.
             viewer.screenSpaceEventHandler.setInputAction((
@@ -252,6 +226,32 @@ export class AcFeaturePicker {
                         </tbody></table>`);
             },
                 ScreenSpaceEventType.LEFT_CLICK);
+        }
+    }
+
+    mouseMoved(movement){
+        // If a feature was previously highlighted, undo the highlight
+        this.silhouetteBlue.selected = [];
+
+        // Pick a new feature
+        var pickedFeature = this.viewer.scene.pick(movement.endPosition);
+        if (!defined(pickedFeature) || !this.barsDataSource.entities.contains(pickedFeature.id)) {
+            this.nameOverlay.style.display = "none";
+            return;
+        }
+        pickedFeature = pickedFeature.id;
+
+        // A feature was picked, so show it's overlay content
+        this.nameOverlay.style.display = "block";
+        this.nameOverlay.style.bottom =
+        this.viewer.canvas.clientHeight - movement.endPosition.y + "px";
+        this.nameOverlay.style.left = movement.endPosition.x + "px";
+        var name = `${pickedFeature.properties.kind.valueOf()} ${pickedFeature.properties.crop.valueOf()} ${pickedFeature.properties.height.valueOf()}`;
+        this.nameOverlay.textContent = name;
+
+        // Highlight the feature if it's not already selected.
+        if (pickedFeature !== this.selected.feature) {
+            this.silhouetteBlue.selected = [pickedFeature];
         }
     }
 

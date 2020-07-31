@@ -13,8 +13,9 @@ import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import Map from 'ol/Map';
 import BaseLayer from 'ol/layer/Base';
 import { Injectable } from '@angular/core';
-import { PositionProperty, ConstantPositionProperty } from 'cesium';
+import { PositionProperty, ConstantPositionProperty, CustomDataSource, Cartographic, ScreenSpaceEventType } from 'cesium';
 import { AcFeaturePicker } from './ac-feature-picker';
+import { AcCuttingPlanes } from './ac-cutting-planes';
 
 @Injectable({
     providedIn: 'root',
@@ -37,11 +38,24 @@ export class AcVisualizer {
     LOGPC3Layer = new VectorLayer({ source: this.LGPC3Source, title: 'LOGPC3', stackIndex: 0, kind: 'LOGP' });
     LOGPC4Source = new VectorSource();
     LOGPC4Layer = new VectorLayer({ source: this.LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });   
-
-    constructor(private HsMapService: HsMapService, private HsEventBusService: HsEventBusService, private AcFeaturePicker: AcFeaturePicker) {
+    lastYear = 0;
+    barDataSource = new CustomDataSource("Bar chart");
+    bounds: any;
+    
+    constructor(private HsMapService: HsMapService, 
+        private HsEventBusService: HsEventBusService, 
+        private AcFeaturePicker: AcFeaturePicker,
+        private AcCuttingPlanes: AcCuttingPlanes) {
         this.HsEventBusService.cesiumLoads.subscribe((data) => {
             this.init(data.viewer);
-            this.AcFeaturePicker.init(data.viewer);
+            this.AcFeaturePicker.init(data.viewer, this.barDataSource);
+            this.AcCuttingPlanes.init(data.viewer, this.LGPC3);
+            this.AcCuttingPlanes.boundsCalculated.subscribe(bounds => {
+                this.bounds = bounds;
+                for (let entity of this.barDataSource.entities.values) {
+                    this.calculateEntityVisibility(entity);
+                }
+            })
         })
     }
 
@@ -51,6 +65,7 @@ export class AcVisualizer {
         for (let layer of this.newOlLayersAdded) {
             map.removeLayer(layer);
         }
+        this.viewer.dataSources.add(this.barDataSource);
         this.entitiesByYear = {};
         this.newOlLayersAdded = [];
         this.stackPartsStatus = {};
@@ -62,6 +77,14 @@ export class AcVisualizer {
             this.monitorLayerChanges(layer);
         }
 
+        viewer.screenSpaceEventHandler.setInputAction((
+            movement
+        ) => {
+            this.AcCuttingPlanes.mouseMoved(movement);
+            this.AcFeaturePicker.mouseMoved(movement);
+        }, ScreenSpaceEventType.MOUSE_MOVE);
+
+
         viewer.clock.multiplier = 10000000;
         viewer.clock.currentTime = JulianDate.fromDate(new Date(1982, 1, 1));
         viewer.timeline.zoomTo(JulianDate.fromDate(new Date(1982, 1, 1)), JulianDate.fromDate(new Date(2019, 1, 1)))
@@ -69,7 +92,6 @@ export class AcVisualizer {
         setInterval(() => this.timer(), 200);
     }
 
-    lastYear = 0;
     private loadEntitiesForYear(year: number, LGPC3: any, LGPC3Layer: any, LGPC4: any, LGPC4Layer: any, LOGPC3: any, LOGPC3Layer: any, LOGPC4: any, LOGPC4Layer: any) {
         const availability = new TimeIntervalCollection([
             new TimeInterval({
@@ -100,12 +122,12 @@ export class AcVisualizer {
         if (JulianDate.toDate(this.viewer.clock.currentTime).getFullYear() != this.lastYear) {
             this.lastYear = JulianDate.toDate(this.viewer.clock.currentTime).getFullYear();
             this.viewer.entities.suspendEvents();
-            this.viewer.entities.removeAll();
+            this.barDataSource.entities.removeAll();
             if(!this.entitiesByYear[this.lastYear])
                 this.loadEntitiesForYear(this.lastYear, this.LGPC3, this.LGPC3Layer, this.LGPC4, this.LGPC4Layer, this.LOGPC3, this.LOGPC3Layer, this.LOGPC4, this.LOGPC4Layer);
             else {
                 for(let entity of <Array<Entity>>this.entitiesByYear[this.lastYear]){
-                    this.viewer.entities.add(entity);
+                    this.barDataSource.entities.add(entity);
                 }
             }
             for (let entity of this.entitiesByYear[this.lastYear]) {
@@ -121,15 +143,23 @@ export class AcVisualizer {
             const kind = e.target.get('kind');
             const stackIndex = e.target.get('stackIndex');
             this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = show;
-            for (let entity of this.viewer.entities.values) {
+            for (let entity of this.barDataSource.entities.values) {
                 if (entity.properties.layer.getValue() == e.target) {
-                    entity.show = show;
+                    this.calculateEntityVisibility(entity);
                 }
                 if (!entity.isAvailable(this.viewer.clock.currentTime))
                     continue;
                 this.calcEntityStackPosition(entity, kind, stackIndex);
             }
         });
+    }
+
+    calculateEntityVisibility(entity: Entity) {
+        entity.show = entity.properties.layer.valueOf().getVisible() && (this.bounds == null || this.entityInBounds(entity));
+    }
+    entityInBounds(entity: Entity): boolean {
+        const position = Cartographic.fromCartesian(entity.position.getValue(this.viewer.clock.currentTime));
+        return position.longitude >= this.bounds.minX && position.longitude <= this.bounds.maxX && position.latitude >= this.bounds.minY && position.latitude <= this.bounds.maxY; 
     }
 
     private calcEntityStackPosition(entity: Entity, kind: any, stackIndex: any) {
@@ -189,6 +219,6 @@ export class AcVisualizer {
         this.entitiesByYear[year].push(entity);
 
         //Add the entity to the collection.
-        this.viewer.entities.add(entity);
+        this.barDataSource.entities.add(entity);
     }
 }
