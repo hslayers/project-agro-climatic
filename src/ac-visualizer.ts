@@ -14,6 +14,7 @@ import Map from 'ol/Map';
 import BaseLayer from 'ol/layer/Base';
 import { Injectable } from '@angular/core';
 import { PositionProperty, ConstantPositionProperty } from 'cesium';
+import { AcFeaturePicker } from './ac-feature-picker';
 
 @Injectable({
     providedIn: 'root',
@@ -35,12 +36,12 @@ export class AcVisualizer {
     LOGPC3Source = new VectorSource();
     LOGPC3Layer = new VectorLayer({ source: this.LGPC3Source, title: 'LOGPC3', stackIndex: 0, kind: 'LOGP' });
     LOGPC4Source = new VectorSource();
-    LOGPC4Layer = new VectorLayer({ source: this.LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });
-    
+    LOGPC4Layer = new VectorLayer({ source: this.LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });   
 
-    constructor(private HsMapService: HsMapService, private HsEventBusService: HsEventBusService) {
+    constructor(private HsMapService: HsMapService, private HsEventBusService: HsEventBusService, private AcFeaturePicker: AcFeaturePicker) {
         this.HsEventBusService.cesiumLoads.subscribe((data) => {
             this.init(data.viewer);
+            this.AcFeaturePicker.init(data.viewer);
         })
     }
 
@@ -176,7 +177,7 @@ export class AcVisualizer {
             position: surfacePosition,
             show: layer.getVisible(),
             availability: showProperty,
-            properties: new PropertyBag({ layer, stackIndex, kind, longitude, latitude, halfHeight, year }),
+            properties: new PropertyBag({ layer, stackIndex, kind, longitude, latitude, halfHeight, year, height, crop }),
             box: {
                 dimensions: new Cartesian3(width, width, height * heightScale),
                 material: Color.fromHsl(hue, 0.65, 0.48).withAlpha(alpha),
