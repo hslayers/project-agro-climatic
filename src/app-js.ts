@@ -1,11 +1,9 @@
 'use strict';
-import 'hslayers-ng/components/toolbar/toolbar.module';
 import 'hslayers-ng/components/print/print.module';
 import 'hslayers-ng/components/query/query.module';
 import 'hslayers-ng/components/search/search.module';
 import 'hslayers-ng/components/add-layers/add-layers.module';
 import 'hslayers-ng/components/measure/';
-import 'hslayers-ng/components/permalink/permalink.module';
 import 'hslayers-ng/components/info/info.module';
 import 'hslayers-ng/components/datasource-selector/datasource-selector.module';
 import 'hslayers-ng/components/sidebar/sidebar.module';
