@@ -12,7 +12,6 @@
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const hslPaths = require(path.join(__dirname, './node_modules/hslayers-ng/common_paths'));
 const cesiumSource = 'node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 const CopywebpackPlugin = require('copy-webpack-plugin');
@@ -36,8 +35,8 @@ module.exports = {
     modules: [
       path.join(__dirname),
       path.join(__dirname, "./node_modules"),
-      path.resolve(path.join(__dirname, "./node_modules", "hslayers-ng"))
-    ].concat(hslPaths.paths)
+      path.resolve(path.join(__dirname, "./node_modules", "hslayers-ng", "node_modules"))
+    ]
   },
   plugins: [
     // Clean before build
