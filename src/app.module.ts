@@ -11,11 +11,13 @@ import {HsCoreModule} from 'hslayers-ng/components/core/core.module';
 import {UpgradeModule} from '@angular/upgrade/static';
 import { HsCesiumModule } from 'hslayers-ng/components/hscesium/hscesium.module';
 import { AcVisualizer } from './ac-visualizer';
+import { AcAboutComponent } from './about/about.component';
+import { AcAboutModule } from './about/about.module';
 
 @NgModule({
-  imports: [BrowserModule, UpgradeModule, HsCoreModule, HsCesiumModule],
+  imports: [BrowserModule, UpgradeModule, HsCoreModule, HsCesiumModule, AcAboutModule],
   declarations: [],
-  entryComponents: [],
+  entryComponents: [AcAboutComponent],
   providers: [
     AcVisualizer,
     {

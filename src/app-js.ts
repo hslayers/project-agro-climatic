@@ -22,6 +22,7 @@ import {AppModule} from './app.module';
 import {downgrade} from 'hslayers-ng/common/downgrader';
 import {downgradeInjectable} from '@angular/upgrade/static';
 export const downgradedModule = downgrade(AppModule);
+import { AcAboutComponent } from './about/about.component';
 
 angular.module(downgradedModule, []).service('AcVisualizer', downgradeInjectable(AcVisualizer));
 
@@ -109,10 +110,16 @@ module.value('HsConfig', {
   }
 });
 
-module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, HsEventBusService: HsEventBusService, AcVisualizer) {
+module.controller('Main', function ($scope, HsCore, $compile, HsLayoutService, HsEventBusService: HsEventBusService, AcVisualizer, HsDialogContainerService) {
   'ngInject';
   HsLayoutService.sidebarRight = true;
-  //layoutService.sidebarToggleable = false;
+  HsDialogContainerService.create(
+    AcAboutComponent,
+    {
+      message: 'You do not have access rights to see this model! Please contact the Admin or owner of the model to get access rights!',
+      title: 'Access denied!',
+    }
+  );
 }
 );
 
