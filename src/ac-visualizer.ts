@@ -30,17 +30,33 @@ export class AcVisualizer {
     LGPC4 = require('./annual_LGP_C4_1982-2019.json');
     LOGPC3 = require('./annual_LOGP_C3_1982-2019.json');
     LOGPC4 = require('./annual_LOGP_C4_1982-2019.json');
-    LGPC3Source = new VectorSource();
-    LGPC3Layer = new VectorLayer({ source: this.LGPC3Source, title: 'LGPC3', stackIndex: 0, kind: 'LGP' });
-    LGPC4Source = new VectorSource();
-    LGPC4Layer = new VectorLayer({ source: this.LGPC4Source, title: 'LGPC4', stackIndex: 1, kind: 'LGP' });
-    LOGPC3Source = new VectorSource();
-    LOGPC3Layer = new VectorLayer({ source: this.LGPC3Source, title: 'LOGPC3', stackIndex: 0, kind: 'LOGP' });
-    LOGPC4Source = new VectorSource();
-    LOGPC4Layer = new VectorLayer({ source: this.LGPC4Source, title: 'LOGPC4', stackIndex: 1, kind: 'LOGP' });   
+    solarJson = require('./annualsum_radiation_82-19.json');
+    hsuJson = require('./annual_HSU_C3_82-19.json');
+    waterBalanceJson = require('./water-balance.json');
+    frostJson = require('./frostdates-82-19.json');
+    
     lastYear = 0;
     barDataSource = new CustomDataSource("Bar chart");
     bounds: any;
+    layers: {
+        LGPC3
+        LGPC4
+        LOGPC3
+        LOGPC4
+        solar,
+        heatStress,
+        waterBalance,
+        frostPeriod
+    } = {
+        LGPC3: new VectorLayer({ source: new VectorSource(), title: 'LGPC3', hue: 0, boxWidth: 3000, opacity: 1, crop: 'C3', stackIndex: 0, kind: 'LGP', json: this.LGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        LGPC4: new VectorLayer({ source: new VectorSource(), title: 'LGPC4', hue: 0.36, boxWidth: 3000, opacity: 1, crop: 'C4', stackIndex: 1, kind: 'LGP', json: this.LGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        LOGPC3: new VectorLayer({ source: new VectorSource(), title: 'LOGPC3', hue: 0, boxWidth: 5000, opacity: 0.5, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: this.LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        LOGPC4: new VectorLayer({ source: new VectorSource(), title: 'LOGPC4', hue: 0.36, boxWidth: 5000, opacity: 0.5, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: this.LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation', hue: 0.2, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: this.solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: true, condition: true}),
+        heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units', hue: 0.2, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: this.hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: false, condition: true}),
+        waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: this.waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
+        frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period', hue: 0.25, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: this.frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
+    }
     
     constructor(private HsMapService: HsMapService, 
         private HsEventBusService: HsEventBusService, 
@@ -70,7 +86,7 @@ export class AcVisualizer {
         this.newOlLayersAdded = [];
         this.stackPartsStatus = {};
         this.barOffsets = {};
-        for (let layer of [this.LGPC3Layer, this.LGPC4Layer, this.LOGPC3Layer, this.LOGPC4Layer]) {
+        for (let layer of Object.keys(this.layers).map(key => this.layers[key])) {
             map.addLayer(layer);
             this.newOlLayersAdded.push(layer);
             this.stackPartsStatus[`${layer.get('kind')} ${layer.get('stackIndex')}`] = true;
@@ -92,7 +108,7 @@ export class AcVisualizer {
         setInterval(() => this.timer(), 200);
     }
 
-    private loadEntitiesForYear(year: number, LGPC3: any, LGPC3Layer: any, LGPC4: any, LGPC4Layer: any, LOGPC3: any, LOGPC3Layer: any, LOGPC4: any, LOGPC4Layer: any) {
+    private loadEntitiesForYear(year: number) {
         const availability = new TimeIntervalCollection([
             new TimeInterval({
                 start: JulianDate.fromDate(new Date(year, 1, 1)),
@@ -100,20 +116,16 @@ export class AcVisualizer {
             })
         ]);
 
-        for (const feature of LGPC3.features) {
-            this.createBar({ feature, hue: 0, stackIndex: 0, year, showProperty: availability, width: 3000.0, alpha: 1, crop: 'C3', layer: LGPC3Layer, kind: 'LGP' });
-        }
-
-        for (const feature of LGPC4.features) {
-            this.createBar({ feature, hue: 0.36, stackIndex: 1, year, showProperty: availability, width: 3000.0, alpha: 1, crop: 'C4', layer: LGPC4Layer, kind: 'LGP' });
-        }
-
-        for (const feature of LOGPC3.features) {
-            this.createBar({ feature, hue: 0, stackIndex: 0, year, showProperty: availability, width: 5000.0, alpha: 0.5, crop: 'C3', layer: LOGPC3Layer, kind: 'LOGP' });
-        }
-
-        for (const feature of LOGPC4.features) {
-            this.createBar({ feature, hue: 0.36, stackIndex: 1, year, showProperty: availability, width: 5000.0, alpha: 0.5, crop: 'C4', layer: LOGPC4Layer, kind: 'LOGP' });
+        for (let layer of Object.keys(this.layers).map(key => this.layers[key])) {
+            for (const feature of layer.get('json').features) {
+                let hue = layer.get('hue');
+                const kind = layer.get('kind');
+                if(kind == 'WaterBalance') {
+                    const height = parseFloat(feature.properties['Pr' + year]);
+                    hue = height > 0 ? 0.5 : 0.15
+                }
+                this.createBar({ feature, hue, stackIndex: layer.get('stackIndex'), year, showProperty: availability, width: layer.get('boxWidth'), alpha: layer.getOpacity(), crop: layer.get('crop'), layer, kind, prefix: layer.get('prefix') , heightScale: layer.get('heightScale'), initialOffset: layer.get('initialOffset')});
+            }
         }
     }
 
@@ -124,7 +136,7 @@ export class AcVisualizer {
             this.viewer.entities.suspendEvents();
             this.barDataSource.entities.removeAll();
             if(!this.entitiesByYear[this.lastYear])
-                this.loadEntitiesForYear(this.lastYear, this.LGPC3, this.LGPC3Layer, this.LGPC4, this.LGPC4Layer, this.LOGPC3, this.LOGPC3Layer, this.LOGPC4, this.LOGPC4Layer);
+                this.loadEntitiesForYear(this.lastYear);
             else {
                 for(let entity of <Array<Entity>>this.entitiesByYear[this.lastYear]){
                     this.barDataSource.entities.add(entity);
@@ -168,7 +180,7 @@ export class AcVisualizer {
             const longitude = entity.properties.longitude.getValue();
             const latitude = entity.properties.latitude.getValue();
             const year = entity.properties.year.getValue();
-            let newSurfaceHeight = 0;
+            let newSurfaceHeight = entity.properties.initialOffset.getValue();
             for (let i = 0; i < entityStackIndex; i++) {
                 if (this.stackPartsStatus[`${kind} ${i}`]) {
                     const increment = this.barOffsets[`${kind} ${year} ${i} ${longitude} ${latitude}`] - (i > 0 ? this.barOffsets[`${kind} ${year} ${i - 1} ${longitude} ${latitude}`] : 0);
@@ -176,29 +188,36 @@ export class AcVisualizer {
                 }
             }
 
+            const halfHeight = entity.properties.halfHeight.getValue();
+            const height = entity.properties.height.getValue();
+            const condition = entity.properties.condition.getValue();
             entity.position = new ConstantPositionProperty(Cartesian3.fromDegrees(
-                longitude,
+                longitude + (condition ? this.horizOffsetByCondition : -this.horizOffsetByCondition),
                 latitude,
-                newSurfaceHeight + entity.properties.halfHeight.getValue())
+                newSurfaceHeight + halfHeight * Math.sign(height) )
             );
         }
     }
 
-    createBar({ feature, hue, stackIndex, year, showProperty, width, alpha, crop, layer, kind }) {
-        const heightScale = 100;
+    horizOffsetByCondition = 0.0125;
+
+    createBar({ feature, hue, stackIndex, year, showProperty, width, alpha, crop, layer, kind, prefix, heightScale, initialOffset }) {
         const latitude = feature.geometry.coordinates[1];
         const longitude = feature.geometry.coordinates[0];
-        const height = feature.properties['LGP' + year];
+        const height = parseFloat(feature.properties[prefix + year]);
+        const condition = layer.get('condition');
+        if(!height) return;
 
-        let offset = 0;
+        let offset = initialOffset;
         if (stackIndex > 0) {
             offset = this.barOffsets[`${kind} ${year} ${stackIndex - 1} ${longitude} ${latitude}`];
         }
-        const halfHeight = height * heightScale / 2
+        const halfHeight = Math.abs(height) * heightScale / 2.0
+        
         const surfacePosition = Cartesian3.fromDegrees(
-            longitude,
+            longitude + (condition ? this.horizOffsetByCondition : -this.horizOffsetByCondition),
             latitude,
-            offset + halfHeight
+            offset + halfHeight * Math.sign(height)
         );
         this.barOffsets[`${kind} ${year} ${stackIndex} ${longitude} ${latitude}`] = offset + height * heightScale;
 
@@ -207,9 +226,9 @@ export class AcVisualizer {
             position: surfacePosition,
             show: layer.getVisible(),
             availability: showProperty,
-            properties: new PropertyBag({ layer, stackIndex, kind, longitude, latitude, halfHeight, year, height, crop }),
+            properties: new PropertyBag({ layer, stackIndex, kind, longitude, latitude, halfHeight, year, height, crop, initialOffset, condition }),
             box: {
-                dimensions: new Cartesian3(width, width, height * heightScale),
+                dimensions: new Cartesian3(width/ 2.0, width , Math.abs(height) * heightScale),
                 material: Color.fromHsl(hue, 0.65, 0.48).withAlpha(alpha),
                 outline: true,
                 outlineColor: Color.fromHsl(hue, 0.8, 0.3).withAlpha(alpha),
