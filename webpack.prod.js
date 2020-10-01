@@ -22,7 +22,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
-  devtool: 'source-map',
+  devtool: 'cheap-source-map',
   output: {
     // Add a chunkhash to file name so it will not be cached by browsers when content changed
     filename: '[name].[hash].bundle.js',
@@ -123,7 +123,7 @@ module.exports = merge(common, {
           {
             loader: 'html-loader',
             options: {
-              minimize: true,
+              minimize: false,
               caseSensitive: true,
             },
           },
