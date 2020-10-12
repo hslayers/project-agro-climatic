@@ -1,13 +1,9 @@
 'use strict';
-import 'hslayers-ng/components/print/print.module';
-import 'hslayers-ng/components/query/query.module';
-import 'hslayers-ng/components/search/search.module';
+import 'hslayers-ng/components/print/';
 import 'hslayers-ng/components/add-layers/add-layers.module';
-import 'hslayers-ng/components/measure/';
-import 'hslayers-ng/components/info/info.module';
 import 'hslayers-ng/components/datasource-selector/datasource-selector.module';
-import 'hslayers-ng/components/sidebar/sidebar.module';
-import 'hslayers-ng/components/draw/draw.module';
+import 'hslayers-ng/components/sidebar/';
+import 'hslayers-ng/components/draw/';
 import 'hslayers-ng/components/hscesium/';
 import * as angular from 'angular';
 import View from 'ol/View';
@@ -30,15 +26,10 @@ var module = angular.module('hs', [
   downgradedModule,
   'hs.sidebar',
   'hs.draw',
-  'hs.info',
-  'hs.toolbar',
-  'hs.layermanager',
   'hs.query',
   'hs.search', 'hs.print', 'hs.permalink',
   'hs.geolocation',
   'hs.datasource_selector',
-  'hs.save-map',
-  'hs.measure',
   'hs.addLayers',
   'hs.cesium'
 ]);
