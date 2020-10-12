@@ -112,7 +112,7 @@ export class AcCuttingPlanes {
             properties: new PropertyBag({ name }),
             ellipsoid: {
                 radii: new Cartesian3(3000.0, 3000.0, 3000.0),
-                material: Color.fromHsl(0.4, 0.35, 0.48).withAlpha(0.5),
+                material: Color.fromCssColorString('#0099FF').withAlpha(0.7),
             },
         }));
     }
