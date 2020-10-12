@@ -51,15 +51,27 @@ export class AcVisualizer {
         waterBalance,
         frostPeriod
     } = {
-            LGPC3: new VectorLayer({ source: new VectorSource(), title: 'LGP for C3 crops [in days]', hue: 0, boxWidth: 3000, opacity: 1, crop: 'C3', stackIndex: 0, kind: 'LGP', json: this.LGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-            LGPC4: new VectorLayer({ source: new VectorSource(), title: 'LGP for C4 crops [in days]', hue: 0.36, boxWidth: 3000, opacity: 1, crop: 'C4', stackIndex: 1, kind: 'LGP', json: this.LGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-            LOGPC3: new VectorLayer({ source: new VectorSource(), title: 'LOGP for C3 crops [in days]', hue: 0, boxWidth: 5000, opacity: 0.5, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: this.LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-            LOGPC4: new VectorLayer({ source: new VectorSource(), title: 'LOGP for C4 crops [in days]', hue: 0.36, boxWidth: 5000, opacity: 0.5, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: this.LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-            solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation [in MJ/m2/year]', css: '#fff200', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: this.solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: true, condition: true }),
-            fertilization: new VectorLayer({ source: new VectorSource(), title: 'Soil temperatures for fertilization [in days/date]', css: '#7852a9', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Fertilization', json: this.fertilizationDateJson, prefix: 'LastD', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
-            heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units [number]', css: '#2e8b57', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: this.hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
-            waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance [in millimeters per year]', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: this.waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
-            frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period [in days]', css: '#813f0b', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: this.frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
+            LGPC3: new VectorLayer({
+                source: new VectorSource(), title: 'LGP for C3 crops [in days]', abstract: `LGP stands for Length of Growing Period and is calculated as a sum of days when the average temperature is in between the absolute minimum and the absolute maximum of the selected crop.
+            C3 crops are understood as plants that survive solely on C3 fixation, i.e. have no special features to combat photorespiration, such as cereals.`, hue: 0, boxWidth: 3000, opacity: 1, crop: 'C3', stackIndex: 0, kind: 'LGP', json: this.LGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false
+            }),
+            LGPC4: new VectorLayer({
+                source: new VectorSource(), title: 'LGP for C4 crops [in days]', abstract: `LGP stands for Length of Growing Period and is calculated as a sum of days when the average temperature is in between the absolute minimum and the absolute maximum of the selected crop.
+            C4 crops use the C4 carbon fixation pathway to increase their photosynthetic efficiency by reducing or suppressing photorespiration, such as maize.`, hue: 0.36, boxWidth: 3000, opacity: 1, crop: 'C4', stackIndex: 1, kind: 'LGP', json: this.LGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false
+            }),
+            LOGPC3: new VectorLayer({
+                source: new VectorSource(), title: 'LOGP for C3 crops [in days]', abstract: `LOGP stands for Length of Optimal Growing Period and it is calculated as a sum of days when the average daily temperature is at the best temperatures for crop growth, between the optimal minimum and optimal maximum of the selected crop.
+            C3 crops are understood as plants that survive solely on C3 fixation, i.e. have no special features to combat photorespiration, such as cereals.`, hue: 0, boxWidth: 5000, opacity: 0.5, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: this.LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false
+            }),
+            LOGPC4: new VectorLayer({
+                source: new VectorSource(), title: 'LOGP for C4 crops [in days]', abstract: `LOGP stands for Length of Optimal Growing Period and it is calculated as a sum of days when the average daily temperature is at the best temperatures for crop growth, between the optimal minimum and optimal maximum of the selected crop.
+            C4 crops use the C4 carbon fixation pathway to increase their photosynthetic efficiency by reducing or suppressing photorespiration, such as maize.`, hue: 0.36, boxWidth: 5000, opacity: 0.5, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: this.LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false
+            }),
+            solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation [in MJ/m2/year]', abstract: 'Total yearly solar energy received at the Earth’s surface.', css: '#fff200', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: this.solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: true, condition: true }),
+            fertilization: new VectorLayer({ source: new VectorSource(), title: 'Soil temperatures for fertilization [in days/date]', abstract: 'Last fall dates determining when ammonium nitrogen fertilization can be applied without excessive nitrification during the autumn and winter when the soil temperature turns below 10 °C.', css: '#7852a9', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Fertilization', json: this.fertilizationDateJson, prefix: 'LastD', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
+            heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units [number]', abstract: 'A summary of maximum daily temperatures higher than the absolute maximum temperature for crop growth - occurs only in some years in this area of interest.', css: '#2e8b57', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: this.hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
+            waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance [in millimeters per year]', abstract: 'Value of evapotranspiration and runoff subtracted from precipitation.', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: this.waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
+            frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period [in days]', abstract: 'Time period between last spring frost date and first fall frost date of the year.', css: '#813f0b', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: this.frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
         }
 
     constructor(private HsMapService: HsMapService,
@@ -133,15 +145,16 @@ export class AcVisualizer {
         });
 
         var animationViewModel = viewer.animation.viewModel;
-        animationViewModel.dateFormatter = function (date, viewModel) { 
+        animationViewModel.dateFormatter = function (date, viewModel) {
             var gregorianDate = JulianDate.toGregorianDate(date);
-            return sprintf("%04d", gregorianDate.year);};
-
-        animationViewModel.timeFormatter = function (date, viewModel) {
-            return ''; 
+            return sprintf("%04d", gregorianDate.year);
         };
 
-        (<any> viewer.timeline).makeLabel = function (time) {
+        animationViewModel.timeFormatter = function (date, viewModel) {
+            return '';
+        };
+
+        (<any>viewer.timeline).makeLabel = function (time) {
             var gregorian = JulianDate.toGregorianDate(time);
             return gregorian.year;
         };
