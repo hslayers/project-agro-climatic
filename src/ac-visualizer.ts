@@ -48,14 +48,14 @@ export class AcVisualizer {
         waterBalance,
         frostPeriod
     } = {
-        LGPC3: new VectorLayer({ source: new VectorSource(), title: 'LGPC3', hue: 0, boxWidth: 3000, opacity: 1, crop: 'C3', stackIndex: 0, kind: 'LGP', json: this.LGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-        LGPC4: new VectorLayer({ source: new VectorSource(), title: 'LGPC4', hue: 0.36, boxWidth: 3000, opacity: 1, crop: 'C4', stackIndex: 1, kind: 'LGP', json: this.LGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-        LOGPC3: new VectorLayer({ source: new VectorSource(), title: 'LOGPC3', hue: 0, boxWidth: 5000, opacity: 0.5, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: this.LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-        LOGPC4: new VectorLayer({ source: new VectorSource(), title: 'LOGPC4', hue: 0.36, boxWidth: 5000, opacity: 0.5, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: this.LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
-        solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation', hue: 0.2, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: this.solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: true, condition: true}),
-        heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units', hue: 0.2, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: this.hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: false, condition: true}),
-        waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: this.waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
-        frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period', hue: 0.25, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: this.frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
+        LGPC3: new VectorLayer({ source: new VectorSource(), title: 'LGP for C3 crops [in days]', hue: 0, boxWidth: 3000, opacity: 1, crop: 'C3', stackIndex: 0, kind: 'LGP', json: this.LGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        LGPC4: new VectorLayer({ source: new VectorSource(), title: 'LGP for C4 crops [in days]', hue: 0.36, boxWidth: 3000, opacity: 1, crop: 'C4', stackIndex: 1, kind: 'LGP', json: this.LGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        LOGPC3: new VectorLayer({ source: new VectorSource(), title: 'LOGP for C3 crops [in days]', hue: 0, boxWidth: 5000, opacity: 0.5, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: this.LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        LOGPC4: new VectorLayer({ source: new VectorSource(), title: 'LOGP for C4 crops [in days]', hue: 0.36, boxWidth: 5000, opacity: 0.5, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: this.LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
+        solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation [in MJ/m2/year]', css: '#fff200', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: this.solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: true, condition: true}),
+        heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units [number]', css: '#2e8b57', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: this.hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: false, condition: true}),
+        waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance [in millimeters per year]', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: this.waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
+        frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period [in days]', css: '#813f0b', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: this.frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
     }
     
     constructor(private HsMapService: HsMapService, 
@@ -119,12 +119,13 @@ export class AcVisualizer {
         for (let layer of Object.keys(this.layers).map(key => this.layers[key])) {
             for (const feature of layer.get('json').features) {
                 let hue = layer.get('hue');
+                let css = layer.get('css');
                 const kind = layer.get('kind');
                 if(kind == 'WaterBalance') {
                     const height = parseFloat(feature.properties['Pr' + year]);
                     hue = height > 0 ? 0.5 : 0.15
                 }
-                this.createBar({ feature, hue, stackIndex: layer.get('stackIndex'), year, showProperty: availability, width: layer.get('boxWidth'), alpha: layer.getOpacity(), crop: layer.get('crop'), layer, kind, prefix: layer.get('prefix') , heightScale: layer.get('heightScale'), initialOffset: layer.get('initialOffset')});
+                this.createBar({ feature, hue, css, stackIndex: layer.get('stackIndex'), year, showProperty: availability, width: layer.get('boxWidth'), alpha: layer.getOpacity(), crop: layer.get('crop'), layer, kind, prefix: layer.get('prefix') , heightScale: layer.get('heightScale'), initialOffset: layer.get('initialOffset')});
             }
         }
     }
@@ -201,7 +202,7 @@ export class AcVisualizer {
 
     horizOffsetByCondition = 0.0125;
 
-    createBar({ feature, hue, stackIndex, year, showProperty, width, alpha, crop, layer, kind, prefix, heightScale, initialOffset }) {
+    createBar({ feature, hue, css, stackIndex, year, showProperty, width, alpha, crop, layer, kind, prefix, heightScale, initialOffset }) {
         const latitude = feature.geometry.coordinates[1];
         const longitude = feature.geometry.coordinates[0];
         const height = parseFloat(feature.properties[prefix + year]);
@@ -220,7 +221,9 @@ export class AcVisualizer {
             offset + halfHeight * Math.sign(height)
         );
         this.barOffsets[`${kind} ${year} ${stackIndex} ${longitude} ${latitude}`] = offset + height * heightScale;
-
+        const material = hue !== undefined ? Color.fromHsl(hue, 0.65, 0.48).withAlpha(alpha) : Color.fromCssColorString(css).withAlpha(alpha);
+        const outlineColor = new Color();
+        material.clone().darken(0.5, outlineColor);
         //The polyline instance itself needs to be on an entity.
         var entity = new Entity({
             position: surfacePosition,
@@ -229,9 +232,9 @@ export class AcVisualizer {
             properties: new PropertyBag({ layer, stackIndex, kind, longitude, latitude, halfHeight, year, height, crop, initialOffset, condition }),
             box: {
                 dimensions: new Cartesian3(width/ 2.0, width , Math.abs(height) * heightScale),
-                material: Color.fromHsl(hue, 0.65, 0.48).withAlpha(alpha),
+                material,
                 outline: true,
-                outlineColor: Color.fromHsl(hue, 0.8, 0.3).withAlpha(alpha),
+                outlineColor,
             },
         });
         if(this.entitiesByYear[year] == undefined) this.entitiesByYear[year] = [];
