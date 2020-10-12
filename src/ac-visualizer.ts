@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { PositionProperty, ConstantPositionProperty, CustomDataSource, Cartographic, ScreenSpaceEventType } from 'cesium';
 import { AcFeaturePicker } from './ac-feature-picker';
 import { AcCuttingPlanes } from './ac-cutting-planes';
+import CesiumMath from 'cesium/Source/Core/Math';
 
 @Injectable({
     providedIn: 'root',
@@ -34,6 +35,7 @@ export class AcVisualizer {
     hsuJson = require('./annual_HSU_C3_82-19.json');
     waterBalanceJson = require('./water-balance.json');
     frostJson = require('./frostdates-82-19.json');
+    fertilizationDateJson = this.processFertilizationDate(require('./fertilization-date.json'));
     
     lastYear = 0;
     barDataSource = new CustomDataSource("Bar chart");
@@ -44,6 +46,7 @@ export class AcVisualizer {
         LOGPC3
         LOGPC4
         solar,
+        fertilization,
         heatStress,
         waterBalance,
         frostPeriod
@@ -53,6 +56,7 @@ export class AcVisualizer {
         LOGPC3: new VectorLayer({ source: new VectorSource(), title: 'LOGP for C3 crops [in days]', hue: 0, boxWidth: 5000, opacity: 0.5, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: this.LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
         LOGPC4: new VectorLayer({ source: new VectorSource(), title: 'LOGP for C4 crops [in days]', hue: 0.36, boxWidth: 5000, opacity: 0.5, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: this.LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false }),
         solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation [in MJ/m2/year]', css: '#fff200', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: this.solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: true, condition: true}),
+        fertilization: new VectorLayer({ source: new VectorSource(), title: 'Soil temperatures for fertilization [in days/date]', css: '#7852a9', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Fertilization', json: this.fertilizationDateJson, prefix: 'LastD', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: false, condition: true}),
         heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units [number]', css: '#2e8b57', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: this.hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 0 , visible: false, condition: true}),
         waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance [in millimeters per year]', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: this.waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
         frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period [in days]', css: '#813f0b', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: this.frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 0, visible: false, condition: true }),
@@ -73,6 +77,20 @@ export class AcVisualizer {
                 }
             })
         })
+    }
+
+    processFertilizationDate(json: any){
+        for (const feature of json.features) {
+            for(let i=1982; i<2019; i++){
+                const parsedDate = new Date(feature.properties[`LastD${i}`]);
+                var start = new Date(parsedDate.getFullYear(), 0, 0);
+                var diff = parsedDate.getTime() - start.getTime();
+                var oneDay = 1000 * 60 * 60 * 24;
+                var day = Math.floor(diff / oneDay) - 200;
+                feature.properties[`LastD${i}`] = day
+            }
+        }
+        return json
     }
 
     async init(viewer: Viewer) {
@@ -105,6 +123,14 @@ export class AcVisualizer {
         viewer.clock.currentTime = JulianDate.fromDate(new Date(1982, 1, 1));
         viewer.timeline.zoomTo(JulianDate.fromDate(new Date(1982, 1, 1)), JulianDate.fromDate(new Date(2019, 1, 1)))
         
+        viewer.scene.camera.flyTo({
+            destination: Cartesian3.fromDegrees(12.0000003,46.90000, 185000.0),
+            orientation: {
+              heading: CesiumMath.toRadians(20.0),
+              pitch: CesiumMath.toRadians(-25.0),
+              roll: 0.0,
+            },
+          });
         setInterval(() => this.timer(), 200);
     }
 
