@@ -19,6 +19,7 @@ import {downgrade} from 'hslayers-ng/common/downgrader';
 import {downgradeInjectable} from '@angular/upgrade/static';
 export const downgradedModule = downgrade(AppModule);
 import { AcAboutComponent } from './about/about.component';
+import OpenStreetMapImageryProvider from 'cesium/Source/Scene/OpenStreetMapImageryProvider';
 
 angular.module(downgradedModule, []).service('AcVisualizer', downgradeInjectable(AcVisualizer));
 
@@ -56,6 +57,9 @@ module.value('HsConfig', {
   cesiumBase: './',
   cesiumTimeline: true,
   cesiumdDebugShowFramesPerSecond: true,
+  imageryProvider: new OpenStreetMapImageryProvider({
+      url : '//a.tile.openstreetmap.org/'
+  }),
   cesiumAnimation: true,
   terrain_provider: new EllipsoidTerrainProvider(),
   cesiumAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWZkMGMyZi05NWY2LTQ1YjQtOTg1Yy1iZWUzYmEwN2M0ZWEiLCJpZCI6MTE2MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0MzIzMjg3M30.SJ1Q7M850xh3TmhLtQz55mz8d1hhgdttvrPXJg1mv44',          
