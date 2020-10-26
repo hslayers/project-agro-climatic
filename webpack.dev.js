@@ -56,7 +56,7 @@ module.exports = merge(common, {
       {
         test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
         use: [{
-          loader: 'file-loader',
+          loader: 'url-loader',
           options: {
             name: '[name].[ext]',
             outputPath: 'fonts/'
@@ -75,7 +75,7 @@ module.exports = merge(common, {
       {
         test: /\.(png|svg|jpg|gif)$/,
         use: {
-          loader: 'file-loader',
+          loader: 'url-loader',
           options: {
             name: '[name].[ext]',
             outputPath: 'images'

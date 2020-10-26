@@ -14,14 +14,10 @@
   .hs-lm-warning-scale{visibility:hidden}
   body {margin: 0}
   </style>
-    <% for (var css in htmlWebpackPlugin.files.css) { %>
-    <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
-  <% } %>
+   <%= htmlWebpackPlugin.tags.headTags %>
 </head>
 <body >
     <hs ng-controller="Main" style="position: relative;"></hs>
-    <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-      <script type="application/javascript" src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
-    <% } %>
+    <%= htmlWebpackPlugin.tags.bodyTags %>
 </body>
 </html>
