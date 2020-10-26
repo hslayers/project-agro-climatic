@@ -96,6 +96,17 @@ module.value('HsConfig', {
     feature_crossfilter: false,
     routing: false,
     tracking: false
+  },
+  layerTooltipDelay: 0,
+  translationOverrides: {
+    "en": {
+      LAYERMANAGER: {
+        'conditions': 'Related to environmental variables',
+        'yield': 'Related to the length of (optimal) growing period of a crop',
+      },
+      LAYERS: {
+      }
+    }
   }
 });
 
