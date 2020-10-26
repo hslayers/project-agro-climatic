@@ -1,9 +1,5 @@
 'use strict';
-import 'hslayers-ng/components/print/';
 import 'hslayers-ng/components/add-layers/add-layers.module';
-import 'hslayers-ng/components/datasource-selector/datasource-selector.module';
-import 'hslayers-ng/components/sidebar/';
-import 'hslayers-ng/components/draw/';
 import 'hslayers-ng/components/hscesium/';
 import * as angular from 'angular';
 import View from 'ol/View';
@@ -26,9 +22,7 @@ angular.module(downgradedModule, []).service('AcVisualizer', downgradeInjectable
 var module = angular.module('hs', [
   downgradedModule,
   'hs.sidebar',
-  'hs.draw',
-  'hs.query',
-  'hs.search', 'hs.print', 'hs.permalink',
+  'hs.search',
   'hs.geolocation',
   'hs.datasource_selector',
   'hs.addLayers',
@@ -91,7 +85,7 @@ module.value('HsConfig', {
   panelWidths: {
   },
   panelsEnabled: {
-    language: false,
+    language: true,
     composition_browser: false,
     legend: false,
     ows: false,
