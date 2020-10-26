@@ -6,3 +6,6 @@ build-prod:
 
 build-and-rsync:
 	make build-prod && make rsync
+
+serve:
+	node_modules/.bin/webpack-dev-server --config webpack.dev.js --progress
