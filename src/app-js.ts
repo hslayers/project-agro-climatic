@@ -103,6 +103,7 @@ module.value('HsConfig', {
       LAYERMANAGER: {
         'conditions': 'Related to environmental variables',
         'yield': 'Related to the length of (optimal) growing period of a crop',
+        "mapContent": "Agro-climatic factors",
       },
       LAYERS: {
       }
