@@ -1,13 +1,16 @@
-import 'core-js/es6/reflect';
-import 'core-js/es7/reflect';
-import 'reflect-metadata';
-(window as any).__Zone_disable_requestAnimationFrame = true;
-(window as any).__Zone_disable_setTimeout = true;
-import 'zone.js';
-import * as angular from 'angular';
-import {AppModule} from './app.module';
+import './polyfills';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {setAngularJSGlobal} from '@angular/upgrade/static';
+import {AppModule} from './app.module';
 
-setAngularJSGlobal(angular);
-platformBrowserDynamic().bootstrapModule(AppModule);
+platformBrowserDynamic()
+  .bootstrapModule(AppModule)
+  .then((ref) => {
+    // Ensure Angular destroys itself on hot reloads.
+    if (window['ngRef']) {
+      window['ngRef'].destroy();
+    }
+    window['ngRef'] = ref;
+
+    // Otherwise, log the boot error
+  })
+  .catch((err) => console.error(err));

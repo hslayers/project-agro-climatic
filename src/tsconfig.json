@@ -1,0 +1,32 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "experimentalDecorators": true,
+      "baseUrl": "./",
+      "outDir": "./dist/out-tsc",
+      "sourceMap": true,
+      "declaration": false,
+      "downlevelIteration": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "importHelpers": true,
+      "preserveSymlinks": true,
+      "resolveJsonModule": true,
+      "target": "es2015",
+      "lib": [
+        "es2018",
+        "dom"
+      ],
+      "paths": {
+        "fie": [
+          "../"
+        ]
+      }
+    },
+    "angularCompilerOptions": {
+      "enableResourceInlining": true,
+      "fullTemplateTypeCheck": true,
+      "strictInjectionParameters": true
+    }
+  }

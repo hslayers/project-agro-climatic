@@ -6,18 +6,28 @@ import Entity from 'cesium/Source/DataSources/Entity';
 import Color from 'cesium/Source/Core/Color';
 import { Vector as VectorSource } from 'ol/source';
 import VectorLayer from 'ol/layer/Vector';
-import { HsMapService } from 'hslayers-ng/components/map/map.service';
-import { HsEventBusService } from 'hslayers-ng/components/core/event-bus.service';
+import { HsMapService } from 'hslayers-ng';
+import { HsEventBusService } from 'hslayers-ng';
 import PropertyBag from 'cesium/Source/DataSources/PropertyBag';
 import Viewer from 'cesium/Source/Widgets/Viewer/Viewer';
 import Map from 'ol/Map';
 import BaseLayer from 'ol/layer/Base';
 import { Injectable } from '@angular/core';
-import { PositionProperty, ConstantPositionProperty, CustomDataSource, Cartographic, ScreenSpaceEventType } from 'cesium';
+import {ConstantPositionProperty, CustomDataSource, Cartographic, ScreenSpaceEventType } from 'cesium';
 import { AcFeaturePicker } from './ac-feature-picker';
 import { AcCuttingPlanes } from './ac-cutting-planes';
 import CesiumMath from 'cesium/Source/Core/Math';
 import sprintf from 'cesium/Source/ThirdParty/sprintf.js';
+import LGPC3 from './annual_LGP_C3_1982-2019.json';
+import LGPC4 from './annual_LGP_C4_1982-2019.json';
+import LOGPC3 from './annual_LOGP_C3_1982-2019.json';
+import LOGPC4 from './annual_LOGP_C4_1982-2019.json';
+import solarJson from './annualsum_radiation_82-19.json';
+import hsuJson from './annual_HSU_C3_82-19.json';
+import waterBalanceJson  from './water-balance.json';
+import frostJson  from './frostdates-82-19.json';
+import fertilizationDateJson  from './fertilization-date.json';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -27,15 +37,7 @@ export class AcVisualizer {
     newOlLayersAdded: Array<BaseLayer> = [];
     viewer: Viewer;
     entitiesByYear: any = {};
-    LGPC3 = require('./annual_LGP_C3_1982-2019.json');
-    LGPC4 = require('./annual_LGP_C4_1982-2019.json');
-    LOGPC3 = require('./annual_LOGP_C3_1982-2019.json');
-    LOGPC4 = require('./annual_LOGP_C4_1982-2019.json');
-    solarJson = require('./annualsum_radiation_82-19.json');
-    hsuJson = require('./annual_HSU_C3_82-19.json');
-    waterBalanceJson = require('./water-balance.json');
-    frostJson = require('./frostdates-82-19.json');
-    fertilizationDateJson = this.processFertilizationDate(require('./fertilization-date.json'));
+    fertilizationDateJson = this.processFertilizationDate(fertilizationDateJson);
 
     lastYear = 0;
     barDataSource = new CustomDataSource("Bar chart");
@@ -53,25 +55,25 @@ export class AcVisualizer {
     } = {
             LGPC3: new VectorLayer({
                 source: new VectorSource(), title: 'LGP for C3 crops [in days]', exclusive: false, abstract: `LGP stands for Length of Growing Period and is calculated as a sum of days when the average temperature is in between the absolute minimum and the absolute maximum of the selected crop.
-            C3 crops are understood as plants that survive solely on C3 fixation, i.e. have no special features to combat photorespiration, such as cereals.`, hue: 0, boxWidth: 3000, opacity: 1, crop: 'C3', stackIndex: 0, kind: 'LGP', json: this.LGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: false
+            C3 crops are understood as plants that survive solely on C3 fixation, i.e. have no special features to combat photorespiration, such as cereals.`, hue: 0, boxWidth: 3000, opacity: 1, crop: 'C3', stackIndex: 0, kind: 'LGP', json: LGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: false
             }),
             LGPC4: new VectorLayer({
                 source: new VectorSource(), title: 'LGP for C4 crops [in days]', exclusive: false, abstract: `LGP stands for Length of Growing Period and is calculated as a sum of days when the average temperature is in between the absolute minimum and the absolute maximum of the selected crop.
-            C4 crops use the C4 carbon fixation pathway to increase their photosynthetic efficiency by reducing or suppressing photorespiration, such as maize.`, hue: 0.36, boxWidth: 3000, opacity: 1, crop: 'C4', stackIndex: 1, kind: 'LGP', json: this.LGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: false
+            C4 crops use the C4 carbon fixation pathway to increase their photosynthetic efficiency by reducing or suppressing photorespiration, such as maize.`, hue: 0.36, boxWidth: 3000, opacity: 1, crop: 'C4', stackIndex: 1, kind: 'LGP', json: LGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: false
             }),
             LOGPC3: new VectorLayer({
                 source: new VectorSource(), title: 'LOGP for C3 crops [in days]', exclusive: false, abstract: `LOGP stands for Length of Optimal Growing Period and it is calculated as a sum of days when the average daily temperature is at the best temperatures for crop growth, between the optimal minimum and optimal maximum of the selected crop.
-            C3 crops are understood as plants that survive solely on C3 fixation, i.e. have no special features to combat photorespiration, such as cereals.`, hue: 0, boxWidth: 5000, opacity: 0.8, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: this.LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: true
+            C3 crops are understood as plants that survive solely on C3 fixation, i.e. have no special features to combat photorespiration, such as cereals.`, hue: 0, boxWidth: 5000, opacity: 0.8, crop: 'C3', stackIndex: 0, kind: 'LOGP', json: LOGPC3, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: true
             }),
             LOGPC4: new VectorLayer({
                 source: new VectorSource(), title: 'LOGP for C4 crops [in days]', exclusive: false, abstract: `LOGP stands for Length of Optimal Growing Period and it is calculated as a sum of days when the average daily temperature is at the best temperatures for crop growth, between the optimal minimum and optimal maximum of the selected crop.
-            C4 crops use the C4 carbon fixation pathway to increase their photosynthetic efficiency by reducing or suppressing photorespiration, such as maize.`, hue: 0.36, boxWidth: 5000, opacity: 0.8, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: this.LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: false
+            C4 crops use the C4 carbon fixation pathway to increase their photosynthetic efficiency by reducing or suppressing photorespiration, such as maize.`, hue: 0.36, boxWidth: 5000, opacity: 0.8, crop: 'C4', stackIndex: 1, kind: 'LOGP', json: LOGPC4, prefix: 'LGP', heightScale: 200.0, path: 'yield', initialOffset: 0, condition: false, visible: false
             }),
-            solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation [in MJ/m2/year]', abstract: 'Total yearly solar energy received at the Earth’s surface.', css: '#fff200', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: this.solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: true, condition: true }),
+            solar: new VectorLayer({ source: new VectorSource(), title: 'Solar radiation [in MJ/m2/year]', abstract: 'Total yearly solar energy received at the Earth’s surface.', css: '#fff200', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Solar', json: solarJson, prefix: 'Radi', heightScale: 2.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: true, condition: true }),
             fertilization: new VectorLayer({ source: new VectorSource(), title: 'Soil temperatures for fertilization [in days before year\'s end]', abstract: 'Last fall dates determining when ammonium nitrogen fertilization can be applied without excessive nitrification during the autumn and winter when the soil temperature turns below 10 °C.', css: '#7852a9', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'Fertilization', json: this.fertilizationDateJson, prefix: 'LastD', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
-            heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units [number]', abstract: 'A summary of maximum daily temperatures higher than the absolute maximum temperature for crop growth - occurs only in some years in this area of interest.', css: '#2e8b57', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: this.hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
-            waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance [in millimeters per year]', abstract: 'Value of evapotranspiration and runoff subtracted from precipitation.', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: this.waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
-            frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period [in days]', abstract: 'Time period between last spring frost date and first fall frost date of the year.', css: '#813f0b', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: this.frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
+            heatStress: new VectorLayer({ source: new VectorSource(), title: 'Heat stress units [number]', abstract: 'A summary of maximum daily temperatures higher than the absolute maximum temperature for crop growth - occurs only in some years in this area of interest.', css: '#2e8b57', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'HeatStress', json: hsuJson, prefix: 'HSU', heightScale: 4000.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
+            waterBalance: new VectorLayer({ source: new VectorSource(), title: 'Water balance [in millimeters per year]', abstract: 'Value of evapotranspiration and runoff subtracted from precipitation.', hue: 0.8, boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'WaterBalance', json: waterBalanceJson, prefix: 'Pr', heightScale: 300.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
+            frostPeriod: new VectorLayer({ source: new VectorSource(), title: 'Frost-free period [in days]', abstract: 'Time period between last spring frost date and first fall frost date of the year.', css: '#813f0b', boxWidth: 5000, opacity: 1, crop: '', stackIndex: 0, kind: 'FrostFreePeriod', json: frostJson, prefix: 'Period', heightScale: 200.0, exclusive: true, path: 'conditions', initialOffset: 35000, visible: false, condition: true }),
         }
 
     constructor(private HsMapService: HsMapService,
@@ -81,7 +83,7 @@ export class AcVisualizer {
         this.HsEventBusService.cesiumLoads.subscribe((data) => {
             this.init(data.viewer);
             this.AcFeaturePicker.init(data.viewer, this.barDataSource);
-            this.AcCuttingPlanes.init(data.viewer, this.LGPC3);
+            this.AcCuttingPlanes.init(data.viewer, LGPC3);
             this.AcCuttingPlanes.boundsCalculated.subscribe(bounds => {
                 this.bounds = bounds;
                 for (let entity of this.barDataSource.entities.values) {
@@ -133,7 +135,7 @@ export class AcVisualizer {
 
         viewer.clock.multiplier = 10000000;
         viewer.clock.currentTime = JulianDate.fromDate(new Date(1982, 1, 1));
-        viewer.timeline.zoomTo(JulianDate.fromDate(new Date(1982, 1, 1)), JulianDate.fromDate(new Date(2019, 1, 1)))
+      
 
         viewer.scene.camera.flyTo({
             destination: Cartesian3.fromDegrees(12.0000003, 46.90000, 185000.0),
@@ -147,7 +149,8 @@ export class AcVisualizer {
         var animationViewModel = viewer.animation.viewModel;
         animationViewModel.dateFormatter = function (date, viewModel) {
             var gregorianDate = JulianDate.toGregorianDate(date);
-            return sprintf("%04d", gregorianDate.year);
+            const tmp = sprintf("%04d", gregorianDate.year);
+            return tmp;
         };
 
         animationViewModel.timeFormatter = function (date, viewModel) {
@@ -158,6 +161,7 @@ export class AcVisualizer {
             var gregorian = JulianDate.toGregorianDate(time);
             return gregorian.year;
         };
+        viewer.timeline.zoomTo(JulianDate.fromDate(new Date(1982, 1, 1)), JulianDate.fromDate(new Date(2019, 1, 1)))
         setInterval(() => this.timer(), 200);
     }
 

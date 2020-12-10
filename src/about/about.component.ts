@@ -1,11 +1,11 @@
 
 import {Component, ViewRef} from '@angular/core';
-import {HsDialogComponent} from 'hslayers-ng/components/layout/dialogs/dialog-component.interface';
-import {HsDialogContainerService} from 'hslayers-ng/components/layout/dialogs/dialog-container.service';
-import {HsDialogItem} from 'hslayers-ng/components/layout/dialogs/dialog-item';
+import {HsDialogComponent} from 'hslayers-ng';
+import {HsDialogContainerService} from 'hslayers-ng';
+import {HsDialogItem} from 'hslayers-ng';
 @Component({
   selector: 'ac-about',
-  template: require('./about.html'),
+  templateUrl: './about.html',
 })
 export class AcAboutComponent implements HsDialogComponent {
 
