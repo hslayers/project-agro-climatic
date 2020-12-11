@@ -1,6 +1,6 @@
-import { ComponentFactoryResolver, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import View from 'ol/View';
-import { HsConfig, HsPanelContainerService, HsLayoutService} from 'hslayers-ng';
+import { HsConfig, HsLayoutService} from 'hslayers-ng';
 import { EllipsoidTerrainProvider, OpenStreetMapImageryProvider } from 'cesium';
 import { Tile } from 'ol/layer';
 import { OSM} from 'ol/source';
@@ -12,7 +12,6 @@ export class MainService {
   constructor(
     private HsConfig: HsConfig,
     private HsLayoutService: HsLayoutService,
-    private componentFactoryResolver: ComponentFactoryResolver,
     private acVisualizer: AcVisualizer
   ) { 
   }
@@ -79,15 +78,7 @@ export class MainService {
         }
       }
     });
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-      HsCesiumComponent
-    );
-
-    this.HsLayoutService.mapSpaceRef.subscribe((mapSpace) => {
-      if (mapSpace) {
-        mapSpace.createComponent(componentFactory);
-      }
-    });
+    this.HsLayoutService.addMapVisualizer(HsCesiumComponent);
   }
 
 
