@@ -45,6 +45,9 @@
             }
           },
           "configurations": {
+            "development": {
+              "tsConfig": "src/tsconfig.dev.json"
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -87,7 +90,7 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "agro-climatic:build"
+            "browserTarget": "agro-climatic:build:development"
           },
           "configurations": {
             "production": {

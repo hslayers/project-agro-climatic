@@ -17,12 +17,7 @@
       "lib": [
         "es2018",
         "dom"
-      ],
-      "paths": {
-        "fie": [
-          "../"
-        ]
-      }
+      ]
     },
     "angularCompilerOptions": {
       "enableResourceInlining": true,
