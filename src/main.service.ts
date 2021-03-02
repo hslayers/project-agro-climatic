@@ -4,7 +4,7 @@ import { HsConfig, HsLayoutService} from 'hslayers-ng';
 import { EllipsoidTerrainProvider, OpenStreetMapImageryProvider } from 'cesium';
 import { Tile } from 'ol/layer';
 import { OSM} from 'ol/source';
-import {HsCesiumComponent} from 'hslayers-cesium';
+import {HslayersCesiumComponent} from 'hslayers-cesium';
 import { AcVisualizer } from 'ac-visualizer';
 
 @Injectable({providedIn: 'root'})
@@ -78,7 +78,7 @@ export class MainService {
         }
       }
     });
-    this.HsLayoutService.addMapVisualizer(HsCesiumComponent);
+    this.HsLayoutService.addMapVisualizer(HslayersCesiumComponent);
   }
 
 
